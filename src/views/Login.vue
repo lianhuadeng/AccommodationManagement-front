@@ -2,23 +2,21 @@
 import { User, Lock } from '@element-plus/icons-vue'
 import { ref } from 'vue'
 import { ElMessage } from 'element-plus';
-import {  userLoginService } from '@/api/user.js'
 import { useTokenStore } from '@/stores/token.js';
 // 导入路由
 import { useRouter } from 'vue-router'
 const router = useRouter()
-//控制登录表单的显示
 
 //登录表单数据
 const loginData = ref({
-    userNameOrEmail: '',
+    userId: '',
     password: ''
 })
 
 // 清空表单数据
 const clearFormData = () => {
     loginData.value = {
-        userNameOrEmail: '',
+        userId: '',
         password: ''
     };
 };
@@ -29,21 +27,21 @@ const tokenStore = useTokenStore();
 const login = async () => {
     try {
       if(loginData.value.password==='123456' ){
-        if(loginData.value.userNameOrEmail === 'stu'){
-          tokenStore.setToken(loginData.value);
-          router.push('/user/index')
+        if(loginData.value.userId === 'stu'){
+          tokenStore.setToken(loginData.value)
+          router.push({path:'/user',query:{id:loginData.value.userId}})
         }
-        else if(loginData.value.userNameOrEmail === 'sys'){
-          router.push('/system/index')
+        else if(loginData.value.userId === 'sys'){
+          router.push({path:'/system/index',query:{id:loginData.value.userId}})
         }
-        else if(loginData.value.userNameOrEmail === 'leader'){
-          router.push('/leader/index')
+        else if(loginData.value.userId === 'leader'){
+          router.push({path:'/leader/index',query:{id:loginData.value.userId}})
         }
-        else if(loginData.value.userNameOrEmail === 'main'){
-          router.push('/maintenance/index')
+        else if(loginData.value.userId === 'main'){
+          router.push({path:'/maintenance/index',query:{id:loginData.value.userId}})
         }
-        else if(loginData.value.userNameOrEmail === 'dormitory'){
-          router.push('/dormitory/index')
+        else if(loginData.value.userId === 'dormitory'){
+          router.push({path:'/dormitory/index',query:{id:loginData.value.userId}})
         }
       }
       else{
@@ -51,6 +49,7 @@ const login = async () => {
                       message: '密码错误！',
                       type: 'error',
                   });
+        clearFormData()
       }
     //     let result = await userLoginService(loginData.value);
     //     if (result.code === 0) {
@@ -90,7 +89,7 @@ const login = async () => {
                 </el-form-item>
                 <el-form-item>
                     <el-input :prefix-icon="User" placeholder="请输入学号"
-                        v-model="loginData.userNameOrEmail"></el-input>
+                        v-model="loginData.userId"></el-input>
                 </el-form-item>
                 <el-form-item>
                     <el-input name="password" :prefix-icon="Lock" type="password" placeholder="请输入密码"

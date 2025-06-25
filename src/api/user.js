@@ -1,5 +1,13 @@
 import request from '@/utils/request.js';
 
+export const roomPageList = (query) =>request.get('/room/pageList',{params:query})
+
+export const getUserInfo = (id) =>request.get('/user/info',{params:id})
+
+export const checkSubmit = (id) => request.get('/user/info',{params:id})
+
+export const makeSubmit = (id) => request.get('user/info',{params:id})
+
 // 用户登录
 export const userLoginService = (loginData) => {
     const params = new URLSearchParams();

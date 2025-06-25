@@ -2,11 +2,15 @@
 import {
   Iphone,
   Location,
-  Tickets,
   User,
   List
 } from '@element-plus/icons-vue'
 import {ref} from "vue";
+import {ElMessage} from "element-plus";
+import {useRoute} from "vue-router";
+
+const route = useRoute()
+// const emit = defineEmits(['setId'])
 
 const stu = ref({
   name:'丘俊杰',
@@ -16,6 +20,8 @@ const stu = ref({
   password:'123456'
 })
 
+stu.value.id = route.query.id
+
 const resetPassword =ref(false)
 const oldPassword=ref('' )//旧密码
 const newPassword=  ref('')//新密码
@@ -24,6 +30,43 @@ const formLabelWidth = '140px'
 
 const solveContact = ()=>{
 
+}
+
+const resetCheck = () =>{
+  // resetPassword.value = false
+  if(!oldPassword.value||!newPassword.value||!newAgainPassword.value){
+    ElMessage({
+      message:'请输入完整！',
+      type:"error"
+    })
+    return
+  }
+  if(oldPassword.value !== stu.value.password){
+    ElMessage({
+      message:'旧密码错误！',
+      type:"error"
+    })
+  }
+  else if(newPassword.value!==newAgainPassword.value){
+    ElMessage({
+      message:'新密码不一致！',
+      type:"error"
+    })
+  }
+  else{
+    ElMessage({
+      message:'修改成功！',
+      type:"success"
+    })
+    resetPassword.value = false
+
+  }
+}
+const clearForm = ()=>{
+  resetPassword.value = true
+  oldPassword.value=''
+  newPassword.value=''
+  newAgainPassword.value=''
 }
 </script>
 
@@ -38,7 +81,7 @@ const solveContact = ()=>{
     >
       <template #extra>
         <el-button @click="solveContact" type="primary">保存</el-button>
-        <el-button @click="resetPassword=true" type="danger">修改密码</el-button>
+        <el-button @click="clearForm" type="danger">修改密码</el-button>
 
         <el-dialog v-model="resetPassword" title="修改密码" width="500" center>
           <template #footer>
@@ -54,7 +97,7 @@ const solveContact = ()=>{
                   <el-input type="password" v-model="newAgainPassword" autocomplete="off" ></el-input>
                 </el-form-item>
               </el-form>
-              <el-button type="primary" @click="resetPassword = false">确认</el-button>
+              <el-button type="primary" @click="resetCheck">确认</el-button>
               <el-button @click="resetPassword = false">取消</el-button>
             </div>
           </template>

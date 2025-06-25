@@ -1,16 +1,28 @@
 <script  setup>
 import { ref, onMounted, watch } from 'vue'
-import { useRouter } from 'vue-router'
+import {useRoute, useRouter} from 'vue-router'
 import { useTokenStore } from '@/stores/token.js';
-import { getUserNameByTokenService, userLogoutService } from '@/api/user.js';
+import {getUserInfo, getUserNameByTokenService, userLogoutService} from '@/api/user.js';
 import { ElMessage } from 'element-plus';
 const tokenStore = useTokenStore();
 
 const router = useRouter()
+const route = useRoute()
+
+const stu = ref({
+  name:'丘俊杰',
+  id:'2022141460001',
+  contact:'wx:mx11224qiu',
+  location:'乐创园区翠竹楼6层628室3床',
+  password:'123456'
+})
+// stu.value = getUserInfo(route.query.id)
+stu.value.id = route.query.id
+
 const activeIndex = ref('/index')
 const handleSelect = (key) => {
     activeIndex.value = key; // 更新当前选中的菜单
-    router.push(key); // 跳转到对应路由
+    router.push({path:key,query:{id:stu.value.id}}); // 跳转到对应路由
 };
 
 const userName = ref("");
