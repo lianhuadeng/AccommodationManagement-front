@@ -7,7 +7,7 @@ import {ElMessage} from "element-plus";
 const route = useRoute()
 
 const stu = ref()
-getUserInfo(route.query.id).then(res=>{
+getUserInfo().then(res=>{
   stu.value = res.data.records
 })
 const applications = ref([])
@@ -87,7 +87,7 @@ const selectChange4 = ()=>{
 }
 
 const onSubmit = () =>{
-  checkSubmit(stu.value.id).then(res=>{
+  checkSubmit().then(res=>{
     if(res.data){
       ElMessage({
         message: '你已有尚未完成的申请！',
@@ -97,7 +97,7 @@ const onSubmit = () =>{
     else{
       try
       {
-        makeAppSubmit({stu,query}).then(res => {
+        makeAppSubmit(query).then(res => {
           if (res.data) {
             ElMessage({
               message: '已提交申请！',

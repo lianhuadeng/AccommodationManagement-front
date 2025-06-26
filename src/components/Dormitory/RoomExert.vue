@@ -45,7 +45,7 @@ const makeAplExert = (id)=>{
 }
 getMyApplication()
 function getInfo() {
-  getUserInfo(route.query.id).then(res => {
+  getUserInfo().then(res => {
     dor.value = res.data.records
   })
 }

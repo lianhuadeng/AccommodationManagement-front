@@ -1,3 +1,3 @@
 import request from '@/utils/request.js';
 
-export const myContact = (query)=>request.post('all/contact',query)
+export const myContact = (contact)=>request.post('all/contact',contact)

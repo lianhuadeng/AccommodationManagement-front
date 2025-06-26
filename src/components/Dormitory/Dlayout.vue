@@ -8,18 +8,18 @@ const tokenStore = useTokenStore();
 const router = useRouter()
 const route = useRoute()
 
-const stu = ref({
+const dor = ref({
   name:'丘俊杰',
   id:'2022141460001',
   contact:'wx:mx11224qiu',
   password:'123456'
 })
-stu.value.id = route.query.id
+dor.value.id = route.query.id
 
 const activeIndex = ref('/index')
 const handleSelect = (key) => {
   activeIndex.value = key; // 更新当前选中的菜单
-  router.push({path:key,query:{id:stu.value.id}}); // 跳转到对应路由
+  router.push({path:key,query:{id:dor.value.id}}); // 跳转到对应路由
 };
 
 const userName = ref("");

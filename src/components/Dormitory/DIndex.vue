@@ -54,7 +54,7 @@ const dor = ref({
 dor.value.id = route.query.id
 
 function getInfo() {
-  getUserInfo(route.query.id).then(res => {
+  getUserInfo().then(res => {
     dor.value = res.data.records
   })
 }
@@ -68,7 +68,7 @@ const newAgainPassword = ref('') //再次输入新密码
 const formLabelWidth = '140px'
 
 const solveContact = () => {
-  myContact({id:dor.value.id,contact:dor.value.contact}).then(res=>{
+  myContact(dor.value.contact).then(res=>{
     if(res.data.message)
       ElMessage({
         message:'保存成功！',
@@ -107,7 +107,7 @@ const resetCheck = () => {
   }
 }
 const getMyAppExert = () => {
-  getApplication(dor.value.id).then(res => {
+  getApplication().then(res => {
     application.value = res.data.records
   })
 }
@@ -119,7 +119,7 @@ const clearForm = () => {
 }
 
 const getMyMainAll = ()=>{
-  getMaintenance(dor.value.id).then(res=>{
+  getMaintenance().then(res=>{
     maintenance.value = res.data.records
   })
 }

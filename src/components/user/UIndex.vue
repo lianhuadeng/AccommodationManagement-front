@@ -14,8 +14,9 @@ import {myContact} from "@/api/all.js";
 const route = useRoute()
 const application = ref([
   {
+    id:'',
     type: '1',
-    id: '1234',
+    userid: '1234',
     process: '待处理'
   },
   {
@@ -57,7 +58,7 @@ const stu = ref({
 stu.value.id = route.query.id
 
 function getInfo() {
-  getUserInfo(route.query.id).then(res => {
+  getUserInfo().then(res => {
     stu.value = res.data.records
   })
 }
@@ -71,7 +72,7 @@ const newAgainPassword = ref('') //再次输入新密码
 const formLabelWidth = '140px'
 
 const solveContact = () => {
-  myContact({id:stu.value.id,contact:stu.value.contact}).then(res=>{
+  myContact(stu.value.contact).then(res=>{
     getInfo()
     if(res.data.message)
     ElMessage({
@@ -110,7 +111,7 @@ const resetCheck = () => {
   }
 }
 const getMyApplication = () => {
-  getApplication(stu.value.id).then(res => {
+  getApplication().then(res => {
     application.value = res.data.records
   })
 }
@@ -146,7 +147,7 @@ const undoApl = (id) => {
   )
 }
 const getMyMaintenance = ()=>{
-  getMaintenance(stu.value.id).then(res=>{
+  getMaintenance().then(res=>{
     maintenance.value = res.data.records
   })
 }
@@ -244,7 +245,7 @@ getMyMaintenance()
       <el-table-column prop="process" label="处理进度" width="180">
         <template #default="{ row }">
           <span :class="getStatusApl(row.process)">{{ row.process }}</span>
-          <el-button v-if="row.process!=='已处理'&&row.process!=='不通过'" @click='undoApl(stu.id)' type="danger" style="margin-left:30%">撤销</el-button>
+          <el-button v-if="row.process!=='已处理'&&row.process!=='不通过'" @click='undoApl(row.id)' type="danger" style="margin-left:30%">撤销</el-button>
         </template>
       </el-table-column>
     </el-table>

@@ -12,7 +12,7 @@ const stu = ref(
 )
 const checkResult = ref();
 
-getUserInfo(route.query.id).then(res=>{
+getUserInfo().then(res=>{
   stu.value = res.data
 })
 getHygiene(stu.value.room).then(res=>{

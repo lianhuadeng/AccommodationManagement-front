@@ -2,8 +2,6 @@ import {createRouter, createWebHistory} from 'vue-router'
 
 import LoginVue from '@/views/Login.vue'
 import LeaderCenter from "@/views/Leader/LeaderCenter.vue";
-import DormitoryCenter from "@/views/Dormitory/DormitoryCenter.vue";
-import MaintenanceCenter from "@/views/Maintenance/MaintenanceCenter.vue";
 import UIndex from "@/components/user/UIndex.vue";
 import Ulayout from "@/components/user/Ulayout.vue";
 import Room from "@/components/user/Room.vue";
@@ -17,6 +15,9 @@ import HygieneCheck from "@/components/Dormitory/HygieneCheck.vue";
 import RoomExert from "@/components/Dormitory/RoomExert.vue";
 import Dlayout from "@/components/Dormitory/Dlayout.vue";
 import DIndex from "@/components/Dormitory/DIndex.vue";
+import MIndex from "@/components/Maintenance/MIndex.vue";
+import Mlayout from "@/components/Maintenance/Mlayout.vue";
+import MainExert from "@/components/Maintenance/MainExert.vue";
 
 
 //定义路由关系
@@ -61,7 +62,12 @@ const routes = [
     },
     {
         path: '/maintenance',
-        component: MaintenanceCenter
+        redirect: 'maintenance/index',
+        component: Mlayout,
+        children:[
+            {path: '/maintenance/index',component: MIndex},
+            {path: '/maintenance/exert',component: MainExert},
+        ]
     },
     {
         path: '/sys',

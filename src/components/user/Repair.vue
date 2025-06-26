@@ -232,7 +232,7 @@ const stu = ref({
   password: '123456'
 })
 
-getUserInfo(route.query.id).then(res => {
+getUserInfo().then(res => {
   stu.value = res.data.records
 })
 

@@ -1,6 +1,6 @@
 import request from '@/utils/request.js';
 
-export const getDorApl = (id)=>request.get('dormitory/apl',{params:id})
+export const getDorApl = (state)=>request.get('dormitory/apl',{params:state})
 
 export const aplExert = (id)=>request.post('dormitory/exert',id)
 

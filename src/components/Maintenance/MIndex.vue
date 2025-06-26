@@ -7,9 +7,9 @@ import {
 import {ref} from "vue";
 import {ElMessage} from "element-plus";
 import {useRoute} from "vue-router";
-import {getMaintenance, getUserInfo} from "@/api/user.js";
+import { getUserInfo} from "@/api/user.js";
 import {myContact} from "@/api/all.js";
-import {getMain, mainExert} from "@/api/staff.js";
+import {getMain} from "@/api/staff.js";
 
 const route = useRoute()
 const maintenance = ref([
@@ -92,47 +92,105 @@ const resetCheck = () => {
   }
 }
 const getMyMainExert = () => {
-  getMain(staff.value.id).then(res => {
+  getMain('待处理').then(res => {
     maintenance.value = res.data.records
   })
 }
+const clearForm = () => {
+  resetPassword.value = true
+  oldPassword.value = ''
+  newPassword.value = ''
+  newAgainPassword.value = ''
+}
+
+
 const lookContent = ref({
   isLook: false,
   content: 'wufjal'
 })
+
 const lookLook = (content) => {
   lookContent.value.content = content
   lookContent.value.isLook = true
 }
-const makeMain = (id) => {
-  mainExert(id).then(res => {
-    ElMessage({
-      message: '处理成功',
-      type: 'success'
-    })
-    getMyMainExert()
-  })
-}
-
 getMyMainExert()
+
 </script>
 
 <template>
   <div>
+    <el-descriptions
+        class="margin-top"
+        title="个人信息"
+        :column="1"
+        :size="'large'"
+        border
+    >
+      <template #extra>
+        <el-button @click="solveContact" type="primary">保存</el-button>
+        <el-button @click="clearForm" type="danger">修改密码</el-button>
+        <el-dialog v-model="resetPassword" title="修改密码" width="500" center>
+          <template #footer>
+            <div class="dialog-footer">
+              <el-form>
+                <el-form-item label="旧密码" :label-width="formLabelWidth">
+                  <el-input type="text" v-model="oldPassword" autocomplete="off"></el-input>
+                </el-form-item>
+                <el-form-item label="新密码" :label-width="formLabelWidth">
+                  <el-input type="password" v-model="newPassword" autocomplete="off"></el-input>
+                </el-form-item>
+                <el-form-item label="确认新密码" :label-width="formLabelWidth">
+                  <el-input type="password" v-model="newAgainPassword" autocomplete="off"></el-input>
+                </el-form-item>
+              </el-form>
+              <el-button type="primary" @click="resetCheck">确认</el-button>
+              <el-button @click="resetPassword = false">取消</el-button>
+            </div>
+          </template>
+        </el-dialog>
+      </template>
+      <el-descriptions-item>
+        <template #label>
+          <div class="cell-item">
+            <el-icon>
+              <user/>
+            </el-icon>
+            姓名
+          </div>
+        </template>
+        {{ staff.name }}
+      </el-descriptions-item>
+      <el-descriptions-item>
+        <template #label>
+          <div class="cell-item">
+            <el-icon>
+              <iphone/>
+            </el-icon>
+            联系方式
+          </div>
+        </template>
+        <el-input v-model="staff.contact" type="text" placeholder="请输入具体的联系方式，如wx：mx11224qiu"></el-input>
+      </el-descriptions-item>
+      <el-descriptions-item>
+        <template #label>
+          <div class="cell-item">
+            <el-icon>
+              <List/>
+            </el-icon>
+            ID:
+          </div>
+        </template>
+        {{ staff.id }}
+      </el-descriptions-item>
+    </el-descriptions>
+    维修记录：
     <el-table :data="maintenance" border style="width: 100%;">
       <el-table-column prop="type" label="维修项目" max-width="150"/>
       <el-table-column prop="location" label="地点" max-width="150"/>
       <el-table-column prop="dormitory" label="分配人ID" width="180"/>
-      <el-table-column label="操作" width="280">
+      <el-table-column label="操作" width="100">
         <template #default="{row}">
-          <el-form :inline="true">
-            <el-form-item>
-              <el-button @click="lookLook(row.content)">查看内容</el-button>
-            </el-form-item>
-            <el-form-item>
-              <el-button type="primary" @click="makeMain(row.id)">已处理</el-button>
-            </el-form-item>
-          </el-form>
+          <el-button @click="lookLook(row.content)">查看内容</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -151,6 +209,26 @@ getMyMainExert()
   </div>
 </template>
 
-<style scoped lang="scss">
+<style scoped>
 
+.cell-item {
+  display: flex;
+  align-items: center;
+}
+
+.margin-top {
+  margin-top: 20px;
+}
+
+.status-pending {
+  color: #f56c6c;
+}
+
+.status-processing {
+  color: #e6a23c;
+}
+
+.status-completed {
+  color: #67c23a;
+}
 </style>
