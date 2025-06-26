@@ -32,7 +32,7 @@ const login = async () => {
           router.push({path:'/user',query:{id:loginData.value.userId}})
         }
         else if(loginData.value.userId === 'sys'){
-          router.push({path:'/system/index',query:{id:loginData.value.userId}})
+          router.push({path:'/system',query:{id:loginData.value.userId}})
         }
         else if(loginData.value.userId === 'leader'){
           router.push({path:'/leader/index',query:{id:loginData.value.userId}})
@@ -41,7 +41,7 @@ const login = async () => {
           router.push({path:'/maintenance/index',query:{id:loginData.value.userId}})
         }
         else if(loginData.value.userId === 'dormitory'){
-          router.push({path:'/dormitory/index',query:{id:loginData.value.userId}})
+          router.push({path:'/dormitory',query:{id:loginData.value.userId}})
         }
       }
       else{

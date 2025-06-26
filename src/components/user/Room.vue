@@ -2,13 +2,6 @@
 import { ref} from "vue";
 import {roomPageList} from "@/api/user.js";
 
-const formInline = ref({
-  user: '',
-  region: '',
-  date: '',
-})
-
-
 const query = ref({
   pageNo: 1,
   pageSize: 10,
@@ -36,8 +29,8 @@ const getRoomList = () => {
     query.value.total = res.data.total
   })
 }
-getRoomList()
 
+getRoomList()
 
 </script>
 
@@ -94,23 +87,18 @@ getRoomList()
       <el-table-column prop="building" label="楼栋" width="180"/>
       <el-table-column prop="floor" label="楼层" width="180"/>
       <el-table-column prop="room" label="房间" width="180"/>
-<!--      <el-table-column prop="bed" label="床位" width="180"/>-->
-
-
+      <el-table-column prop="bed" label="床位" width="180"/>
     </el-table>
-
-
     <el-pagination
         v-model:current-page="query.pageNo"
         v-model:page-size="query.pageSize"
         :page-sizes="[100, 200, 300, 400]"
         :background="true"
         layout="total, sizes, prev, pager, next, jumper"
-        :total="400"
+        :total="query.total"
         @size-change="pageSizeChange"
         @current-change="pageNoChange"
     />
-
   </div>
 </template>
 

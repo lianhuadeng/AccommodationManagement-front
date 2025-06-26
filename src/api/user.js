@@ -6,8 +6,19 @@ export const getUserInfo = (id) =>request.get('/user/info',{params:id})
 
 export const checkSubmit = (id) => request.get('/user/info',{params:id})
 
-export const makeSubmit = (id) => request.get('user/info',{params:id})
+export const makeAppSubmit = (query) => request.post('user/info',query)
 
+export const applicationPageList = (aplPage)=> request.get('user/application',{params:aplPage})
+
+export const getApplication = (id) => request.get('user/myapplication',{params:id})
+
+export const cancelApl = (id) => request.post('user/cancel',id)
+
+export const getMaintenance = (id) =>request.get('user/maintenance',{params:id})
+
+export const makeMaiSubmit = (query)=> request.post('user/maintenance',query)
+
+export const getHygiene = (roomId) => request.get('user/hygiene',{params:roomId})
 // 用户登录
 export const userLoginService = (loginData) => {
     const params = new URLSearchParams();

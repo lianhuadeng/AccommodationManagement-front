@@ -1,14 +1,13 @@
 <script setup>
 import {
   Iphone,
-  Location,
   User,
   List
 } from '@element-plus/icons-vue'
 import {ref} from "vue";
 import {ElMessage} from "element-plus";
 import {useRoute} from "vue-router";
-import {cancelApl, getApplication, getMaintenance, getUserInfo} from "@/api/user.js";
+import { getApplication, getMaintenance, getUserInfo} from "@/api/user.js";
 import {myContact} from "@/api/all.js";
 
 const route = useRoute()
@@ -19,9 +18,7 @@ const application = ref([
     process: '待处理'
   },
   {
-    type: '1',
-    id: '1234',
-    process: '不通过'
+    type:'2'
   }
 ])
 const maintenance = ref([
@@ -39,10 +36,10 @@ const maintenance = ref([
     type:'水',
     staff:'张三',
     process:'已处理'
-  },
+  }
 ])
 
-const stu = ref({
+const dor = ref({
   name: '丘俊杰',
   id: '2022141460001',
   contact: 'wx:mx11224qiu',
@@ -54,11 +51,11 @@ const stu = ref({
   password: '123456'
 })
 
-stu.value.id = route.query.id
+dor.value.id = route.query.id
 
 function getInfo() {
   getUserInfo(route.query.id).then(res => {
-    stu.value = res.data.records
+    dor.value = res.data.records
   })
 }
 
@@ -71,13 +68,13 @@ const newAgainPassword = ref('') //再次输入新密码
 const formLabelWidth = '140px'
 
 const solveContact = () => {
-  myContact({id:stu.value.id,contact:stu.value.contact}).then(res=>{
-    getInfo()
+  myContact({id:dor.value.id,contact:dor.value.contact}).then(res=>{
     if(res.data.message)
-    ElMessage({
-      message:'保存成功！',
-      type:'success'
-    })
+      ElMessage({
+        message:'保存成功！',
+        type:'success'
+      })
+    getInfo()
   })
 }
 
@@ -90,7 +87,7 @@ const resetCheck = () => {
     })
     return
   }
-  if (oldPassword.value !== stu.value.password) {
+  if (oldPassword.value !== dor.value.password) {
     ElMessage({
       message: '旧密码错误！',
       type: "error"
@@ -109,8 +106,8 @@ const resetCheck = () => {
     getInfo()
   }
 }
-const getMyApplication = () => {
-  getApplication(stu.value.id).then(res => {
+const getMyAppExert = () => {
+  getApplication(dor.value.id).then(res => {
     application.value = res.data.records
   })
 }
@@ -120,38 +117,14 @@ const clearForm = () => {
   newPassword.value = ''
   newAgainPassword.value = ''
 }
-const getStatusApl = (status) => {
-  return {
-    'status-pending': status === '待审核',
-    'status-processing': status === '待处理',
-    'status-completed': status === '已处理',
-    'status-out': status==='不通过'
-  }
-}
-const getStatusMai = (status) => {
-  return {
-    'status-pending': status === '待分配',
-    'status-processing': status === '待处理',
-    'status-completed': status === '已处理'
-  }
-}
-const undoApl = (id) => {
-  cancelApl(id).then(res => {
-        ElMessage({
-          message: '撤销成功',
-          type: "success"
-        })
-        getMyApplication()
-      }
-  )
-}
-const getMyMaintenance = ()=>{
-  getMaintenance(stu.value.id).then(res=>{
+
+const getMyMainAll = ()=>{
+  getMaintenance(dor.value.id).then(res=>{
     maintenance.value = res.data.records
   })
 }
-getMyApplication()
-getMyMaintenance()
+getMyAppExert()
+getMyMainAll()
 </script>
 
 <template>
@@ -195,7 +168,7 @@ getMyMaintenance()
             姓名
           </div>
         </template>
-        {{ stu.name }}
+        {{ dor.name }}
       </el-descriptions-item>
       <el-descriptions-item>
         <template #label>
@@ -206,7 +179,7 @@ getMyMaintenance()
             联系方式
           </div>
         </template>
-        <el-input v-model="stu.contact" type="text" placeholder="请输入具体的联系方式，如wx：mx11224qiu"></el-input>
+        <el-input v-model="dor.contact" type="text" placeholder="请输入具体的联系方式，如wx：mx11224qiu"></el-input>
       </el-descriptions-item>
       <el-descriptions-item>
         <template #label>
@@ -214,26 +187,16 @@ getMyMaintenance()
             <el-icon>
               <List/>
             </el-icon>
-            学号
+            ID:
           </div>
         </template>
-        {{ stu.id }}
-      </el-descriptions-item>
-      <el-descriptions-item>
-        <template #label>
-          <div class="cell-item">
-            <el-icon>
-              <Location/>
-            </el-icon>
-            宿舍位置
-          </div>
-        </template>
-        {{ stu.park+'园区'+stu.building+'楼'+stu.floor+'层'+stu.room+'室'+stu.bed+'床'}}
+        {{ dor.id }}
       </el-descriptions-item>
     </el-descriptions>
-    我的宿舍申请：
+    处理记录：
     <el-table :data="application" border style="width: 100%;">
       <el-table-column prop="type" label="类型" max-width="150"/>
+      <el-table-column prop="id" label="申请人ID" width="180"/>
       <el-table-column prop="changeId" label="交换人ID" width="180"/>
       <el-table-column prop="park" label="园区" max-width="150"/>
       <el-table-column prop="building" label="楼栋" max-width="150"/>
@@ -241,26 +204,16 @@ getMyMaintenance()
       <el-table-column prop="room" label="房间" max-width="150"/>
       <el-table-column prop="bed" label="床位" max-width="150"/>
       <el-table-column prop="outRoom" label="校外住宿" width="180"/>
-      <el-table-column prop="process" label="处理进度" width="180">
-        <template #default="{ row }">
-          <span :class="getStatusApl(row.process)">{{ row.process }}</span>
-          <el-button v-if="row.process!=='已处理'&&row.process!=='不通过'" @click='undoApl(stu.id)' type="danger" style="margin-left:30%">撤销</el-button>
-        </template>
-      </el-table-column>
+      <el-table-column prop="checkId" label="审核人ID" width="180"/>
     </el-table>
-    我的维修申请：
+    分配记录：
     <el-table :data="maintenance" border style="width: 100%;">
+      <el-table-column prop="id" label="申请人id" max-width="150"/>
+      <el-table-column prop="location" label="维修地点" max-width="150"/>
       <el-table-column prop="type" label="维修项目" max-width="150"/>
       <el-table-column prop="staff" label="维修人员" width="180"/>
-      <el-table-column prop="process" label="处理进度" width="180">
-        <template #default="{ row }">
-          <span :class="getStatusMai(row.process)">{{ row.process }}</span>
-        </template>
-      </el-table-column>
     </el-table>
-
   </div>
-
 </template>
 
 <style scoped>
@@ -274,12 +227,8 @@ getMyMaintenance()
   margin-top: 20px;
 }
 
-.status-out{
-  color: #ff0000;
-}
-
 .status-pending {
-  color: #271e1e;
+  color: #f56c6c;
 }
 
 .status-processing {
