@@ -1,65 +1,46 @@
 <script setup>
 import {
   Iphone,
-  Location,
   User,
   List
 } from '@element-plus/icons-vue'
 import {ref} from "vue";
 import {ElMessage} from "element-plus";
 import {useRoute} from "vue-router";
-import {cancelApl, getApplication, getMaintenance, getUserInfo} from "@/api/user.js";
+import { getUserInfo} from "@/api/user.js";
 import {myContact} from "@/api/all.js";
+import {getMain} from "@/api/staff.js";
 
 const route = useRoute()
-const application = ref([
-  {
-    id:'',
-    type: '1',
-    userid: '1234',
-    process: '待处理'
-  },
+const maintenance = ref([
   {
     type: '1',
     id: '1234',
-    process: '不通过'
+    staff: '',
+    process: '待处理',
+    content: '客厅外的阳台被封窗，与客厅连为一体，这样的设计不仅拓宽了室内空间，也让阳光和新鲜空气能够更加自由地进入整个房间；\n' +
+        '\n' +
+        '客厅和餐厅的连通设计，使整个居住空间显得更加宽敞和开阔，简洁的装修风格在这里得到了完美的呈现，既实用又美观。\n' +
+        '\n' +
+        '将两个卧室和卫生间的门洞改到客厅的侧面墙上，这样的布局调整让卫生间的空间更加宽敞，也使整个房间的动线更加合理。这样的设计优化了空间利用率，提升了居住的舒适度。'
+  },
+  {
+    type: '2'
   }
 ])
-const maintenance = ref([
-  {
-    type:'水',
-    staff:'张三',
-    process:'待分配'
-  },
-  {
-    type:'水',
-    staff:'张三',
-    process:'待处理'
-  },
-  {
-    type:'水',
-    staff:'张三',
-    process:'已处理'
-  },
-])
 
-const stu = ref({
+const staff = ref({
   name: '丘俊杰',
   id: '2022141460001',
   contact: 'wx:mx11224qiu',
-  park:'乐创',
-  building:'翠竹',
-  floor:'6',
-  room:'628',
-  bed:'3',
   password: '123456'
 })
 
-stu.value.id = route.query.id
+staff.value.id = route.query.id
 
 function getInfo() {
   getUserInfo().then(res => {
-    stu.value = res.data.records
+    staff.value = res.data.records
   })
 }
 
@@ -72,13 +53,13 @@ const newAgainPassword = ref('') //再次输入新密码
 const formLabelWidth = '140px'
 
 const solveContact = () => {
-  myContact(stu.value.contact).then(res=>{
+  myContact(staff.value.contact).then(res => {
+    if (res.data.message)
+      ElMessage({
+        message: '保存成功！',
+        type: 'success'
+      })
     getInfo()
-    if(res.data.message)
-    ElMessage({
-      message:'保存成功！',
-      type:'success'
-    })
   })
 }
 
@@ -91,7 +72,7 @@ const resetCheck = () => {
     })
     return
   }
-  if (oldPassword.value !== stu.value.password) {
+  if (oldPassword.value !== staff.value.password) {
     ElMessage({
       message: '旧密码错误！',
       type: "error"
@@ -110,9 +91,9 @@ const resetCheck = () => {
     getInfo()
   }
 }
-const getMyApplication = () => {
-  getApplication().then(res => {
-    application.value = res.data.records
+const getMyMainExert = () => {
+  getMain('待处理').then(res => {
+    maintenance.value = res.data.records
   })
 }
 const clearForm = () => {
@@ -121,38 +102,19 @@ const clearForm = () => {
   newPassword.value = ''
   newAgainPassword.value = ''
 }
-const getStatusApl = (status) => {
-  return {
-    'status-pending': status === '待审核',
-    'status-processing': status === '待处理',
-    'status-completed': status === '已处理',
-    'status-out': status==='不通过'
-  }
+
+
+const lookContent = ref({
+  isLook: false,
+  content: 'wufjal'
+})
+
+const lookLook = (content) => {
+  lookContent.value.content = content
+  lookContent.value.isLook = true
 }
-const getStatusMai = (status) => {
-  return {
-    'status-pending': status === '待分配',
-    'status-processing': status === '待处理',
-    'status-completed': status === '已处理'
-  }
-}
-const undoApl = (id) => {
-  cancelApl(id).then(res => {
-        ElMessage({
-          message: '撤销成功',
-          type: "success"
-        })
-        getMyApplication()
-      }
-  )
-}
-const getMyMaintenance = ()=>{
-  getMaintenance().then(res=>{
-    maintenance.value = res.data.records
-  })
-}
-getMyApplication()
-getMyMaintenance()
+getMyMainExert()
+
 </script>
 
 <template>
@@ -196,7 +158,7 @@ getMyMaintenance()
             姓名
           </div>
         </template>
-        {{ stu.name }}
+        {{ staff.name }}
       </el-descriptions-item>
       <el-descriptions-item>
         <template #label>
@@ -207,7 +169,7 @@ getMyMaintenance()
             联系方式
           </div>
         </template>
-        <el-input v-model="stu.contact" type="text" placeholder="请输入具体的联系方式，如wx：mx11224qiu"></el-input>
+        <el-input v-model="staff.contact" type="text" placeholder="请输入具体的联系方式，如wx：mx11224qiu"></el-input>
       </el-descriptions-item>
       <el-descriptions-item>
         <template #label>
@@ -215,53 +177,36 @@ getMyMaintenance()
             <el-icon>
               <List/>
             </el-icon>
-            学号
+            ID:
           </div>
         </template>
-        {{ stu.id }}
-      </el-descriptions-item>
-      <el-descriptions-item>
-        <template #label>
-          <div class="cell-item">
-            <el-icon>
-              <Location/>
-            </el-icon>
-            宿舍位置
-          </div>
-        </template>
-        {{ stu.park+'园区'+stu.building+'楼'+stu.floor+'层'+stu.room+'室'+stu.bed+'床'}}
+        {{ staff.id }}
       </el-descriptions-item>
     </el-descriptions>
-    我的宿舍申请：
-    <el-table :data="application" border style="width: 100%;">
-      <el-table-column prop="type" label="类型" max-width="150"/>
-      <el-table-column prop="changeId" label="交换人ID" width="180"/>
-      <el-table-column prop="park" label="园区" max-width="150"/>
-      <el-table-column prop="building" label="楼栋" max-width="150"/>
-      <el-table-column prop="floor" label="楼层" max-width="150"/>
-      <el-table-column prop="room" label="房间" max-width="150"/>
-      <el-table-column prop="bed" label="床位" max-width="150"/>
-      <el-table-column prop="outRoom" label="校外住宿" width="180"/>
-      <el-table-column prop="process" label="处理进度" width="180">
-        <template #default="{ row }">
-          <span :class="getStatusApl(row.process)">{{ row.process }}</span>
-          <el-button v-if="row.process!=='已处理'&&row.process!=='不通过'" @click='undoApl(row.id)' type="danger" style="margin-left:30%">撤销</el-button>
-        </template>
-      </el-table-column>
-    </el-table>
-    我的维修申请：
+    维修记录：
     <el-table :data="maintenance" border style="width: 100%;">
       <el-table-column prop="type" label="维修项目" max-width="150"/>
-      <el-table-column prop="staff" label="维修人员" width="180"/>
-      <el-table-column prop="process" label="处理进度" width="180">
-        <template #default="{ row }">
-          <span :class="getStatusMai(row.process)">{{ row.process }}</span>
+      <el-table-column prop="location" label="地点" max-width="150"/>
+      <el-table-column prop="dormitory" label="分配人ID" width="180"/>
+      <el-table-column label="操作" width="100">
+        <template #default="{row}">
+          <el-button @click="lookLook(row.content)">查看内容</el-button>
         </template>
       </el-table-column>
     </el-table>
-
+    <el-dialog v-model="lookContent.isLook" title="维修具体内容" width="500" center>
+      <template #footer>
+        <div class="dialog-footer">
+          <el-form>
+            <el-form-item>
+              <el-text style="text-align: left">{{ lookContent.content }}</el-text>
+            </el-form-item>
+            <el-button type="primary" @click="lookContent.isLook=false">确认</el-button>
+          </el-form>
+        </div>
+      </template>
+    </el-dialog>
   </div>
-
 </template>
 
 <style scoped>
@@ -275,12 +220,8 @@ getMyMaintenance()
   margin-top: 20px;
 }
 
-.status-out{
-  color: #ff0000;
-}
-
 .status-pending {
-  color: #271e1e;
+  color: #f56c6c;
 }
 
 .status-processing {

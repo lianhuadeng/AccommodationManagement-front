@@ -2,11 +2,25 @@ import request from '@/utils/request.js';
 
 export const roomPageList = (query) =>request.get('/room/pageList',{params:query})
 
-export const getUserInfo = (id) =>request.get('/user/info',{params:id})
+export const getUserInfo = () =>request.get('/user/info')
 
-export const checkSubmit = (id) => request.get('/user/info',{params:id})
+export const checkSubmit = () => request.get('/user/info')
 
-export const makeSubmit = (id) => request.get('user/info',{params:id})
+export const makeAppSubmit = (query) => request.post('user/info',query)
+
+export const applicationPageList = (aplPage)=> request.get('user/application',{params:aplPage})
+
+export const getApplication = () => request.get('user/myapplication')
+
+export const cancelApl = (id) => request.post('user/cancel',id)
+
+export const getMaintenance = () =>request.get('user/maintenance')
+
+export const makeMaiSubmit = (query)=> request.post('user/maintenance',query)
+
+export const getHygiene = (roomId) => request.get('user/hygiene',{params:roomId})
+
+
 
 // 用户登录
 export const userLoginService = (loginData) => {

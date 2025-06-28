@@ -2,7 +2,7 @@
 import { ref, onMounted, watch } from 'vue'
 import {useRoute, useRouter} from 'vue-router'
 import { useTokenStore } from '@/stores/token.js';
-import {getUserInfo, getUserNameByTokenService, userLogoutService} from '@/api/user.js';
+import { getUserNameByTokenService, userLogoutService} from '@/api/user.js';
 import { ElMessage } from 'element-plus';
 const tokenStore = useTokenStore();
 
@@ -16,7 +16,6 @@ const stu = ref({
   location:'乐创园区翠竹楼6层628室3床',
   password:'123456'
 })
-// stu.value = getUserInfo(route.query.id)
 stu.value.id = route.query.id
 
 const activeIndex = ref('/index')

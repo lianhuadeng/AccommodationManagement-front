@@ -1,10 +1,6 @@
 import {createRouter, createWebHistory} from 'vue-router'
 
 import LoginVue from '@/views/Login.vue'
-import LeaderCenter from "@/views/Leader/LeaderCenter.vue";
-import DormitoryCenter from "@/views/Dormitory/DormitoryCenter.vue";
-import SystemCenter from "@/views/System/SystemCenter.vue";
-import MaintenanceCenter from "@/views/Maintenance/MaintenanceCenter.vue";
 import UIndex from "@/components/user/UIndex.vue";
 import Ulayout from "@/components/user/Ulayout.vue";
 import Room from "@/components/user/Room.vue";
@@ -12,6 +8,21 @@ import Discipline from "@/components/user/Discipline.vue";
 import Hygiene from "@/components/user/Hygiene.vue";
 import Repair from "@/components/user/Repair.vue";
 import Change from "@/components/user/Change.vue";
+import RegDiscipline from "@/components/Dormitory/RegDiscipline.vue";
+import AllocateMain from "@/components/Dormitory/AllocateMain.vue";
+import HygieneCheck from "@/components/Dormitory/HygieneCheck.vue";
+import RoomExert from "@/components/Dormitory/RoomExert.vue";
+import Dlayout from "@/components/Dormitory/Dlayout.vue";
+import DIndex from "@/components/Dormitory/DIndex.vue";
+import MIndex from "@/components/Maintenance/MIndex.vue";
+import Mlayout from "@/components/Maintenance/Mlayout.vue";
+import MainExert from "@/components/Maintenance/MainExert.vue";
+import Llayout from "@/components/Leader/Llayout.vue";
+import LIndex from "@/components/Leader/LIndex.vue";
+import Audit from "@/components/Leader/Audit.vue";
+import DispCheck from "@/components/Leader/DispCheck.vue";
+import Batch from "@/components/Leader/Batch.vue";
+
 
 //定义路由关系
 const routes = [
@@ -34,25 +45,44 @@ const routes = [
             {path: '/user/change',component: Change},
             {path: '/user/discipline',component: Discipline},
             {path: '/user/hygiene',component: Hygiene},
-            {path: '/user/repair',component: Repair},
-
+            {path: '/user/repair',component: Repair}
         ]
     },
     {
         path: '/leader',
-        component: LeaderCenter
+        redirect: '/leader/index',
+        component: Llayout,
+        children:[
+            {path: '/leader/index',component: LIndex},
+            {path: '/leader/audit',component: Audit},
+            {path: '/leader/check',component: DispCheck},
+            {path: '/leader/batch',component: Batch}
+        ]
     },
     {
         path: '/dormitory',
-        component: DormitoryCenter
+        redirect: '/dormitory/index',
+        component: Dlayout,
+        children:[
+            {path: '/dormitory/index',component: DIndex},
+            {path: '/dormitory/exert',component: RoomExert},
+            {path: '/dormitory/check',component: HygieneCheck},
+            {path: '/dormitory/discipline',component: RegDiscipline},
+            {path: '/dormitory/allocate',component: AllocateMain},
+        ]
     },
     {
         path: '/maintenance',
-        component: MaintenanceCenter
+        redirect: 'maintenance/index',
+        component: Mlayout,
+        children:[
+            {path: '/maintenance/index',component: MIndex},
+            {path: '/maintenance/exert',component: MainExert},
+        ]
     },
     {
-        path: '/system',
-        component: SystemCenter
+        path: '/sys',
+        redirect: '/sys/index',
     },
 ]
 
