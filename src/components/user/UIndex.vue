@@ -270,7 +270,11 @@ getMyMaintenance()
     我的维修申请：
     <el-table :data="maintenance" border style="width: 100%;">
       <el-table-column prop="repairItem" label="维修项目"/>
-      <el-table-column prop="pictureUrl" label="图片详情"/>
+      <el-table-column prop="pictureUrl" label="图片详情">
+        <template #default="{ row }">
+          <el-image :src="row.pictureUrl" style="width: 60px; height: 60px;" fit="cover"></el-image>
+        </template>
+      </el-table-column>
       <el-table-column prop="applyTime" label="申请时间"/>
       <el-table-column prop="location" label="位置"/>
       <el-table-column prop="content" label="维修详情"/>
