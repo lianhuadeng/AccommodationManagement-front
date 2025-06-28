@@ -2,7 +2,7 @@ import request from '@/utils/request.js';
 
 export const roomPageList = (query) =>request.get('/room/pageList',{params:query})
 
-export const getUserInfo = () =>request.get('/user/info')
+export const getUserInfo = () =>request.get('/userInfo')
 
 export const checkSubmit = () => request.get('/user/info')
 
@@ -12,8 +12,6 @@ export const applicationPageList = (aplPage)=> request.get('user/application',{p
 
 export const getApplication = () => request.get('user/myapplication')
 
-export const cancelApl = (id) => request.post('user/cancel',id)
-
 export const getMaintenance = () =>request.get('user/maintenance')
 
 export const makeMaiSubmit = (query)=> request.post('user/maintenance',query)
@@ -22,28 +20,30 @@ export const getHygiene = (roomId) => request.get('user/hygiene',{params:roomId}
 
 
 
-// 用户登录
-export const userLoginService = (loginData) => {
-    const params = new URLSearchParams();
-    for (let key in loginData) {
-        params.append(key, loginData[key]);
-    }
-    return request.post('/user/login', params);
+//修改密码
+export const changePasswordService = (passwordData) => {
+    return request.post('/changePassword', passwordData);
 }
 
-// 根据用户ID获取用户名
-export const getUserNameByIdService = (userID) => {
-    return request.get('/user/getUserName', { params: { userID } });
+//更新用户信息
+export const updateContactService = (contact) => {
+    const params = new URLSearchParams();
+    params.append('contact', contact);
+    return request.post("/updateContact", params )
 }
+// 用户登录
+export const userLoginService = (loginData) => {
+    return request.post('/login', loginData);
+}
+
 
 export const getUserNameByTokenService = (token) => {
     return request.get('/user/getUserNameByToken', { params: { token } });
 }
 
 export const getUserInfoService = () => {
-    return request.get('/user/userInfo');
+    return request.get('/userInfo');
 }
-
 
 export const changeEmailService = (emailData, token) => {
     const params = new URLSearchParams();
@@ -95,5 +95,5 @@ export const foundLostItemService = (lostID) => {
 export const userLogoutService = (token) => {
     const params = new URLSearchParams();
     params.append('token', token);
-    return request.post('/user/logout', params);
+    return request.post('/logout', params);
 };

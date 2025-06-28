@@ -38,7 +38,7 @@ instance.interceptors.response.use(
         if (err.response.status === 401) {
             //跳转到登录页面
             tokenStore.removeToken();
-            ElMessage.error('请先登录');
+            ElMessage.error('登录信息过期，请重新登录');
             router.push('/login');
             return Promise.reject(err);
         }
