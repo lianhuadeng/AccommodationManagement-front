@@ -16,7 +16,9 @@ import {
 } from "@/api/user.js";
 import {myApplicationService, cancelApplicationService} from "@/api/application.js";
 import {myRepairService} from "@/api/repair.js";
+import {useTokenStore} from "@/stores/token.js";
 
+const tokenStore = useTokenStore()
 const router = useRouter()
 const route = useRoute()
 const application = ref([])
@@ -91,17 +93,16 @@ const rules = {
   ]
 }
 const changePassword = async () => {
-  try {
+
     const result = await changePasswordService(changePasswordData.value);
     if (result.status) {
       ElMessage({
-        message: '修改成功！',
+        message: result.message,
         type: 'success'
       })
-    }
-  } catch (error) {
+    } else {
     ElMessage({
-      message: error.message,
+      message: result.message,
       type: 'error',
     });
   }
@@ -112,8 +113,8 @@ const formLabelWidth = '140px'
 const updateContact = async () => {
   const result = await updateContactService(stu.value.contact);
   if (result.status) {
-    stu.value.contact = result.data.contact;
-    ElMessage.success("修改成功")
+    await getInfo()
+    ElMessage.success(result.message)
   } else {
     ElMessage.error(result.message)
   }
@@ -129,9 +130,9 @@ const getMyApplication = async () => {
 }
 
 const clearForm = () => {
-  changePasswordData.value.oldPassword.value = null
-  changePasswordData.value.newPassword.value = null
-  changePasswordData.value.confirmPassword.value = null
+  changePasswordData.value.oldPassword = null
+  changePasswordData.value.newPassword = null
+  changePasswordData.value.confirmPassword = null
 }
 const getStatusApl = (status) => {
   return {
@@ -287,7 +288,12 @@ getMyMaintenance()
         </template>
       </el-table-column>
     </el-table>
-
+    <el-upload class="avatar-uploader" :auto-upload="true" :show-file-list="false"
+               action="/api/repair/uploadImage" name="file" :headers="{ 'Authorization': tokenStore.token }">
+      <el-icon class="avatar-uploader-icon">
+        <Plus />
+      </el-icon>
+    </el-upload>
   </div>
 
 </template>
