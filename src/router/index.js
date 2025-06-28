@@ -22,7 +22,10 @@ import LIndex from "@/components/Leader/LIndex.vue";
 import Audit from "@/components/Leader/Audit.vue";
 import DispCheck from "@/components/Leader/DispCheck.vue";
 import Batch from "@/components/Leader/Batch.vue";
-
+import Slayout from "@/components/system/Slayout.vue";
+import SIndex from "@/components/system/SIndex.vue";
+import EditUser from "@/components/system/EditUser.vue";
+import EditRoom from "@/components/system/EditRoom.vue";
 
 //定义路由关系
 const routes = [
@@ -81,8 +84,14 @@ const routes = [
         ]
     },
     {
-        path: '/sys',
-        redirect: '/sys/index',
+        path: '/system',
+        redirect: '/system/index',
+        component: Slayout,
+        children:[
+            {path: '/system/index',component: SIndex},
+            {path: '/system/editUser',component: EditUser},
+            {path:'/system/editRoom',component: EditRoom}
+        ]
     },
 ]
 
