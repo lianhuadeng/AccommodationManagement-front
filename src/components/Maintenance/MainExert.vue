@@ -92,7 +92,7 @@ const resetCheck = () => {
   }
 }
 const getMyMainExert = () => {
-  getMain(staff.value.id).then(res => {
+  getMain('待处理').then(res => {
     maintenance.value = res.data.records
   })
 }

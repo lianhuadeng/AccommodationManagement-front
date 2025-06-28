@@ -9,38 +9,19 @@ import {ElMessage} from "element-plus";
 import {useRoute} from "vue-router";
 import { getApplication, getUserInfo} from "@/api/user.js";
 import {myContact} from "@/api/all.js";
-import {getDorMain} from "@/api/dormitory.js";
 
 const route = useRoute()
 const application = ref([
   {
     type: '1',
-    id: '1234',
-    process: '待处理'
+    id: '1234'
   },
   {
     type:'2'
   }
 ])
-const maintenance = ref([
-  {
-    type:'水',
-    staff:'张三',
-    process:'待分配'
-  },
-  {
-    type:'水',
-    staff:'张三',
-    process:'待处理'
-  },
-  {
-    type:'水',
-    staff:'张三',
-    process:'已处理'
-  }
-])
 
-const dor = ref({
+const leader = ref({
   name: '丘俊杰',
   id: '2022141460001',
   contact: 'wx:mx11224qiu',
@@ -52,11 +33,11 @@ const dor = ref({
   password: '123456'
 })
 
-dor.value.id = route.query.id
+leader.value.id = route.query.id
 
 function getInfo() {
   getUserInfo().then(res => {
-    dor.value = res.data.records
+    leader.value = res.data.records
   })
 }
 
@@ -65,11 +46,18 @@ const resetPassword = ref(false)
 const oldPassword = ref('')//旧密码
 const newPassword = ref('')//新密码
 const newAgainPassword = ref('') //再次输入新密码
-
+const getStatusApl = (status) => {
+  return {
+    'status-pending': status === '待审核',
+    'status-processing': status === '待处理',
+    'status-completed': status === '已处理',
+    'status-out': status==='不通过'
+  }
+}
 const formLabelWidth = '140px'
 
 const solveContact = () => {
-  myContact(dor.value.contact).then(res=>{
+  myContact(leader.value.contact).then(res=>{
     if(res.data.message)
       ElMessage({
         message:'保存成功！',
@@ -88,7 +76,7 @@ const resetCheck = () => {
     })
     return
   }
-  if (oldPassword.value !== dor.value.password) {
+  if (oldPassword.value !== leader.value.password) {
     ElMessage({
       message: '旧密码错误！',
       type: "error"
@@ -107,8 +95,8 @@ const resetCheck = () => {
     getInfo()
   }
 }
-const getMyAppExert = () => {
-  getApplication('待处理').then(res => {
+const getMyAppAudit = () => {
+  getApplication('待审核').then(res => {
     application.value = res.data.records
   })
 }
@@ -119,13 +107,7 @@ const clearForm = () => {
   newAgainPassword.value = ''
 }
 
-const getMyMainAll = ()=>{
-  getDorMain().then(res=>{
-    maintenance.value = res.data.records
-  })
-}
-getMyAppExert()
-getMyMainAll()
+getMyAppAudit()
 </script>
 
 <template>
@@ -169,7 +151,7 @@ getMyMainAll()
             姓名
           </div>
         </template>
-        {{ dor.name }}
+        {{ leader.name }}
       </el-descriptions-item>
       <el-descriptions-item>
         <template #label>
@@ -180,7 +162,7 @@ getMyMainAll()
             联系方式
           </div>
         </template>
-        <el-input v-model="dor.contact" type="text" placeholder="请输入具体的联系方式，如wx：mx11224qiu"></el-input>
+        <el-input v-model="leader.contact" type="text" placeholder="请输入具体的联系方式，如wx：mx11224qiu"></el-input>
       </el-descriptions-item>
       <el-descriptions-item>
         <template #label>
@@ -191,10 +173,10 @@ getMyMainAll()
             ID:
           </div>
         </template>
-        {{ dor.id }}
+        {{ leader.id }}
       </el-descriptions-item>
     </el-descriptions>
-    处理记录：
+    审核记录：
     <el-table :data="application" border style="width: 100%;">
       <el-table-column prop="type" label="类型" max-width="150"/>
       <el-table-column prop="id" label="申请人ID" width="180"/>
@@ -205,14 +187,11 @@ getMyMainAll()
       <el-table-column prop="room" label="房间" max-width="150"/>
       <el-table-column prop="bed" label="床位" max-width="150"/>
       <el-table-column prop="outRoom" label="校外住宿" width="180"/>
-      <el-table-column prop="checkId" label="审核人ID" width="180"/>
-    </el-table>
-    分配记录：
-    <el-table :data="maintenance" border style="width: 100%;">
-      <el-table-column prop="id" label="申请人id" max-width="150"/>
-      <el-table-column prop="location" label="维修地点" max-width="150"/>
-      <el-table-column prop="type" label="维修项目" max-width="150"/>
-      <el-table-column prop="staff" label="维修人员" width="180"/>
+      <el-table-column prop="process" label="进度" max-width="150">
+        <template #default="{ row }">
+          <span :class="getStatusApl(row.process)">{{ row.process }}</span>
+        </template>
+      </el-table-column>
     </el-table>
   </div>
 </template>

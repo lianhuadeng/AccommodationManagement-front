@@ -1,7 +1,6 @@
 import {createRouter, createWebHistory} from 'vue-router'
 
 import LoginVue from '@/views/Login.vue'
-import LeaderCenter from "@/views/Leader/LeaderCenter.vue";
 import UIndex from "@/components/user/UIndex.vue";
 import Ulayout from "@/components/user/Ulayout.vue";
 import Room from "@/components/user/Room.vue";
@@ -18,6 +17,11 @@ import DIndex from "@/components/Dormitory/DIndex.vue";
 import MIndex from "@/components/Maintenance/MIndex.vue";
 import Mlayout from "@/components/Maintenance/Mlayout.vue";
 import MainExert from "@/components/Maintenance/MainExert.vue";
+import Llayout from "@/components/Leader/Llayout.vue";
+import LIndex from "@/components/Leader/LIndex.vue";
+import Audit from "@/components/Leader/Audit.vue";
+import DispCheck from "@/components/Leader/DispCheck.vue";
+import Batch from "@/components/Leader/Batch.vue";
 
 
 //定义路由关系
@@ -46,7 +50,14 @@ const routes = [
     },
     {
         path: '/leader',
-        component: LeaderCenter
+        redirect: '/leader/index',
+        component: Llayout,
+        children:[
+            {path: '/leader/index',component: LIndex},
+            {path: '/leader/audit',component: Audit},
+            {path: '/leader/check',component: DispCheck},
+            {path: '/leader/batch',component: Batch}
+        ]
     },
     {
         path: '/dormitory',

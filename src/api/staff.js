@@ -1,5 +1,5 @@
 import request from "@/utils/request.js";
 
-export const getMain = (type)=>request.get('maintenance/list',{params:type})
+export const getMain = (state)=>request.get('maintenance/list',{params:state})
 
 export const mainExert=(id)=>request.post('maintenance/make',id)

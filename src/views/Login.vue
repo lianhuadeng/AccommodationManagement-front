@@ -35,7 +35,7 @@ const login = async () => {
           router.push({path:'/system',query:{id:loginData.value.userId}})
         }
         else if(loginData.value.userId === 'leader'){
-          router.push({path:'/leader/index',query:{id:loginData.value.userId}})
+          router.push({path:'/leader',query:{id:loginData.value.userId}})
         }
         else if(loginData.value.userId === 'main'){
           router.push({path:'/maintenance',query:{id:loginData.value.userId}})
