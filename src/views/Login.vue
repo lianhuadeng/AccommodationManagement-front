@@ -29,7 +29,7 @@ const tokenStore = useTokenStore();
 const login = async () => {
   try {
     const result = await userLoginService(loginData.value);
-    if (result.code === 0) {
+    if (result.status) {
       ElMessage({
         message: '登录成功',
         type: 'success',

@@ -23,7 +23,7 @@ export default defineConfig({
       '/image': {
         target: 'http://localhost:8080',
         changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/image/, '/images')
+        rewrite: (path) => path.replace(/^\/image/, '/image')
       }
     }
   }
