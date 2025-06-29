@@ -7,22 +7,43 @@ import {getRoomListService} from "@/api/room.js";
 
 const parkList = ref([])
 const getParkList = async () => {
+  query.value.buildingId = null
+  query.value.floor = null
+  query.value.roomId = null
   const res = await getParkListService()
   parkList.value = res.data
 }
 const buildingList = ref([])
 const getBuildingList = async () => {
+  query.value.buildingId = null
+  query.value.floor = null
+  query.value.roomId = null
+  selectedFloor.value = null
   const res = await getBuildingListService(query.value.parkId)
   buildingList.value = res.data
 }
 const roomList = ref([])
 const getRoomList = async () => {
+  query.value.roomId = null
+  query.value.floor = selectedFloor.value
   const result = await getRoomListService(query.value)
   roomList.value = result.data
 }
+const bedList = ref([])
+const getBedList = async () => {
+  const result = await bedPageListService(query.value)
+  total.value = result.data.total
+  bedList.value = result.data.items
+
+}
+const maxFloor = ref(0)
+const selectedFloor = ref(null)
 const getFloor = async () => {
+  query.value.roomId = null
+  selectedFloor.value = null
   const result = await getFloorNumService(query.value.buildingId)
   query.value.floor = result.data
+  maxFloor.value = query.value.floor
 }
 const query = ref({
   pageNum: 1,
@@ -32,33 +53,18 @@ const query = ref({
   floor: null,
   roomId: null
 })
-const rooms = ref([
-  query.value, query.value, query.value
-])
+const total = ref(0)
 const pageNoChange = (value) => {
-  query.value.pageNo = value
-  getRoomList()
+  query.value.pageNum = value
+  getBedList()
 }
 const pageSizeChange = (value) => {
   query.value.pageSize = value
-  getRoomList()
+  getBedList()
 }
-
-// const getRoomList = async () => {
-//   bedPageListService(query.value).then(res => {
-//     rooms.value = res.data.records()
-//     query.value.total = res.data.total
-//   })
-// }
-const clearQuery = () => {
-  query.value = {
-    pageNum: 1,
-    pageSize: 10,
-    parkId: null,
-    buildingId: null,
-    floor: null,
-    roomId: null
-  }
+const search = () => {
+  query.value.pageNum = 1
+  getBedList()
 }
 getParkList()
 </script>
@@ -88,44 +94,45 @@ getParkList()
         </el-select>
       </el-form-item>
       <el-form-item>
-        <el-select @change="getRoomList" v-model="query.floor" placeholder="选择楼层" style="width: 240px">
+        <el-select @change="getRoomList" v-model="selectedFloor" placeholder="选择楼层" style="width: 240px">
           <el-option
-              v-for="floor in query.floor"
+              v-for="floor in maxFloor"
               :key="query.floor"
               :label="floor"
-              :value="query.floor"
+              :value="floor"
           />
         </el-select>
       </el-form-item>
       <el-form-item>
-        <el-select change v-model="query.room" placeholder="选择房间" style="width: 240px">
+        <el-select v-model="query.roomId" placeholder="选择房间" style="width: 240px">
           <el-option
-              v-for="park in query.room"
-              :key="park "
-              :label="park"
-              :value="park"
+              v-for="room in roomList"
+              :key="room.roomId "
+              :label="room.roomId%10000"
+              :value="room.roomId"
           />
         </el-select>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" @click="getRoomList">查询</el-button>
+        <el-button type="primary" @click="search">查询</el-button>
       </el-form-item>
     </el-form>
 
-    <el-table :data="rooms" border style="width: 100%;">
-      <el-table-column prop="park" label="园区" width="180"/>
-      <el-table-column prop="building" label="楼栋" width="180"/>
-      <el-table-column prop="floor" label="楼层" width="180"/>
-      <el-table-column prop="room" label="房间" width="180"/>
-      <el-table-column prop="bed" label="床位" width="180"/>
+    <el-table :data="bedList" border style="width: 100%;">
+      <el-table-column prop="parkName" label="园区"/>
+      <el-table-column prop="buildingId" label="楼栋"/>
+      <el-table-column prop="floor" label="楼层"/>
+      <el-table-column prop="roomId" label="房间"/>
+      <el-table-column prop="bedId" label="床位"/>
+      <el-table-column prop="userName" label="所有者"/>
     </el-table>
     <el-pagination
-        v-model:current-page="query.pageNo"
+        v-model:current-page="query.pageNum"
         v-model:page-size="query.pageSize"
         :page-sizes="[5, 10, 15, 20]"
         :background="true"
         layout="total, sizes, prev, pager, next, jumper"
-        :total="query.total"
+        :total="total"
         @size-change="pageSizeChange"
         @current-change="pageNoChange"
     />
