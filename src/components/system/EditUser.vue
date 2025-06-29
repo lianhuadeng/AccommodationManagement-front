@@ -1,10 +1,10 @@
 <script setup>
 import {ref} from "vue";
 import {InfoFilled, UploadFilled} from '@element-plus/icons-vue'
-import {addUser} from "@/api/sys.js";
+import {addStu, userList} from "@/api/sys.js";
 import {ElMessage} from "element-plus";
 
-const op = ref('')
+const op = ref('添加用户')
 const users = ref([
   {
     type: '学生',
@@ -22,10 +22,20 @@ const user = ref({
   type: '',
   id: ''
 })
+const multipleSelection = ref([])
+const query = ref({
+  pageNum: '1',
+  pageSize: '10',
+  total: '100',
+})
 const newUser = ref({
-  name: '1',
-  id: '1',
-  password: '1'
+  name: null,
+  userId: null,
+  password: null,
+  college:null,
+  major:null,
+  grade:null,
+  type:'学生'
 })
 const type = ref([
   {
@@ -46,28 +56,39 @@ const filterType = (value, row) => {
 }
 const excelUrl = ref('')
 
-const handleAvatarSuccess = (response, uploadFile) => {
-  excelUrl.value = URL.createObjectURL(uploadFile.raw)
-}
-
 const newRules = {
-  name: [
-    {required: true, message: '请输入姓名', trigger: 'blur'}],
+  name: [{required: true, message: '请输入姓名', trigger: 'blur'}],
   id: [{required: true, message: '请输入ID', trigger: 'blur'}],
-  password: [{required: true, message: '请输入密码', trigger: 'blur'},]
+  type: [{required: true, message: '请选择类型', trigger: 'blur'}],
+  college: [{required: true, message: '请输入学院', trigger: 'blur'}],
+  major: [{required: true, message: '请输入专业', trigger: 'blur'}],
+  grade: [{required: true, message: '请输入年级', trigger: 'blur'}]
 }
 
 const makeNewUser = () => {
-  addUser(newUser).then(res => {
-    ElMessage({
-      message: '添加成功',
-      type: 'success'
-    })
-  })
+  console.log(newUser.value)
+  addStu(newUser)
 }
-const makeCancelUser=()=>{
 
+const handleSelectionChange = (userSelect) => {
+  multipleSelection.value = userSelect
+  console.log(multipleSelection.value)
 }
+const pageSizeChange = (value) => {
+  query.value.pageSize = value
+  getUserList()
+}
+const pageNoChange = (value) => {
+  query.value.pageNo = value
+  getUserList()
+}
+const getUserList = ()=>{
+ userList(query.value).then(res=>{
+   users.value = res.data
+   // query.value.total=res.data.total
+ })
+}
+getUserList()
 
 </script>
 
@@ -75,17 +96,33 @@ const makeCancelUser=()=>{
   <div>
     <el-radio-group v-model="op">
       <el-radio-button label="添加用户" value="添加用户"/>
-      <el-radio-button @click="newUser=null" label="批量导入" value="批量导入"/>
+      <el-radio-button @click="newUser={type:'学生'}" label="批量导入" value="批量导入"/>
     </el-radio-group>
     <el-form v-if="op==='添加用户'" :rules="newRules" :model="newUser">
+      <el-form-item label="类型" prop="type" max-w-80>
+        <el-select v-model="newUser.type">
+          <el-option
+              v-for="type in ['学生','教师','宿舍管理员','系统管理员','分管领导']"
+              :key="type"
+              :label="type"
+              :value="type"
+          />
+        </el-select>
+      </el-form-item>
       <el-form-item label="姓名" prop="name">
         <el-input v-model="newUser.name"/>
       </el-form-item>
       <el-form-item label="ID" prop="id">
         <el-input v-model="newUser.id"/>
       </el-form-item>
-      <el-form-item label="密码" prop="password">
-        <el-input v-model="newUser.password"/>
+      <el-form-item label="学院" prop="college">
+        <el-input v-model="newUser.college"/>
+      </el-form-item>
+      <el-form-item label="专业" prop="major">
+        <el-input v-model="newUser.major"/>
+      </el-form-item>
+      <el-form-item label="年级" prop="grade">
+        <el-input v-model="newUser.grade"/>
       </el-form-item>
       <el-form-item>
         <el-button @click="makeNewUser" type="primary">提交</el-button>
@@ -105,33 +142,23 @@ const makeCancelUser=()=>{
       </div>
     </el-upload>
     <br>
-    <el-table :data="users" border style="width: 100%;">
-      <el-table-column prop="type" label="类型" width="180" :filters="type" :filter-method="filterType"/>
-      <el-table-column prop="id" label="ID" width="180"/>
-      <el-table-column>
-        <el-button type="warning">修改</el-button>
-        <el-popconfirm
-            width="220"
-            :icon="InfoFilled"
-            icon-color="#626AEF"
-            title="Are you sure to delete this?"
-        >
-          <template #reference>
-            <el-button type="danger">删除</el-button>
-          </template>
-          <template #actions="{ makeCancelUser}">
-            <el-button>取消</el-button>
-            <el-button
-                type="danger"
-                @click="makeCancelUser"
-            >
-              确定
-            </el-button>
-          </template>
-        </el-popconfirm>
-      </el-table-column>
+    <el-table :data="users"  @selection-change="handleSelectionChange"
+              border style="width: 100%;">
+      <el-table-column prop="name" label="姓名"/>
+      <el-table-column prop="id" label="ID" />
+      <el-table-column prop="type" label="类型"  :filters="type" :filter-method="filterType"/>
+      <el-table-column type="selection"/>
     </el-table>
-
+<!--    <el-pagination-->
+<!--        v-model:current-page="query.pageNo"-->
+<!--        v-model:page-size="query.pageSize"-->
+<!--        :page-sizes="[20,50,100,400]"-->
+<!--        :background="true"-->
+<!--        layout="total, sizes, prev, pager, next, jumper"-->
+<!--        :total="query.total"-->
+<!--        @size-change="pageSizeChange"-->
+<!--        @current-change="pageNoChange"-->
+<!--    />-->
   </div>
 </template>
 

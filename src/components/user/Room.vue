@@ -25,7 +25,7 @@ const pageSizeChange = (value) => {
 }
 const getRoomList = () => {
   roomPageList(query.value).then(res => {
-    rooms.value = res.data.records()
+    rooms.value = res.data.records
     query.value.total = res.data.total
   })
 }
