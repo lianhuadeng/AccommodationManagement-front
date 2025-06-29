@@ -18,6 +18,7 @@ import {myApplicationService, cancelApplicationService} from "@/api/application.
 import {myRepairService} from "@/api/repair.js";
 import {useTokenStore} from "@/stores/token.js";
 
+const tokenStore = useTokenStore()
 const router = useRouter()
 const route = useRoute()
 const application = ref([])
@@ -92,17 +93,16 @@ const rules = {
   ]
 }
 const changePassword = async () => {
-  try {
+
     const result = await changePasswordService(changePasswordData.value);
     if (result.status) {
       ElMessage({
-        message: '修改成功！',
+        message: result.message,
         type: 'success'
       })
-    }
-  } catch (error) {
+    } else {
     ElMessage({
-      message: error.message,
+      message: result.message,
       type: 'error',
     });
   }
@@ -113,8 +113,8 @@ const formLabelWidth = '140px'
 const updateContact = async () => {
   const result = await updateContactService(stu.value.contact);
   if (result.status) {
-    ElMessage.success("修改成功")
     await getInfo()
+    ElMessage.success(result.message)
   } else {
     ElMessage.error(result.message)
   }
