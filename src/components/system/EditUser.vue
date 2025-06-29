@@ -1,7 +1,7 @@
 <script setup>
 import {ref} from "vue";
 import {InfoFilled, UploadFilled} from '@element-plus/icons-vue'
-import {addStudentService, userList} from "@/api/sys.js";
+import {addUserService, userList} from "@/api/sys.js";
 import {ElMessage} from "element-plus";
 
 const op = ref('添加用户')
@@ -68,7 +68,7 @@ const newRules = {
 
 const makeNewUser = async () => {
   console.log(newUser.value)
-  const  result = await addStudentService(newUser.value)
+  const  result = await addUserService(newUser.value)
   if (result.status){
     ElMessage.success(result.message)
   }else {
