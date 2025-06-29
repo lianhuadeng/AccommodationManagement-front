@@ -37,7 +37,7 @@ leader.value.id = route.query.id
 
 function getInfo() {
   getUserInfo().then(res => {
-    leader.value = res.data.records
+    leader.value = res.data
   })
 }
 
@@ -97,7 +97,7 @@ const resetCheck = () => {
 }
 const getMyAppAudit = () => {
   getApplication('待审核').then(res => {
-    application.value = res.data.records
+    application.value = res.data
   })
 }
 const clearForm = () => {
@@ -173,7 +173,7 @@ getMyAppAudit()
             ID:
           </div>
         </template>
-        {{ leader.id }}
+        {{ leader.userId }}
       </el-descriptions-item>
     </el-descriptions>
   </div>

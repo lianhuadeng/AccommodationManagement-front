@@ -2,7 +2,7 @@
 import {ref, onMounted, watch} from 'vue'
 import {useRoute, useRouter} from 'vue-router'
 import {useTokenStore} from '@/stores/token.js';
-import {getUserInfoService, getUserNameByTokenService, userLogoutService} from '@/api/user.js';
+import {getUserInfoService, userLogoutService} from '@/api/user.js';
 import {ElMessage} from 'element-plus';
 
 const tokenStore = useTokenStore();
