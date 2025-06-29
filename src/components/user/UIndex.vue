@@ -4,7 +4,7 @@ import {
   Location,
   User,
   List,
-  Lock
+  Lock, Plus
 } from '@element-plus/icons-vue'
 import {ref} from "vue";
 import {ElMessage} from "element-plus";
@@ -23,7 +23,7 @@ const router = useRouter()
 const route = useRoute()
 const application = ref([])
 const maintenance = ref([])
-
+const tokenStore = useTokenStore()
 const stu = ref({
   name: null,
   id: null,
@@ -128,7 +128,6 @@ const getMyApplication = async () => {
     ElMessage.error(result.message)
   }
 }
-
 const clearForm = () => {
   changePasswordData.value.oldPassword = null
   changePasswordData.value.newPassword = null
@@ -161,8 +160,11 @@ const undoApl = async (applicationId) => {
 
 const getMyMaintenance = async () => {
   const result = await myRepairService();
+
   if (result.status){
     maintenance.value = result.data
+    console.log(maintenance.value)
+
   }else{
     ElMessage.error(result.message)
   }
@@ -251,6 +253,7 @@ getMyMaintenance()
         {{ stu.location }}
       </el-descriptions-item>
     </el-descriptions>
+    <br>
     我的宿舍调整申请：
     <el-table :data="application" border style="width: 100%;">
       <el-table-column prop="applicationType" label="申请类型"/>
@@ -268,7 +271,9 @@ getMyMaintenance()
         </template>
       </el-table-column>
     </el-table>
-    我的维修申请：
+    <br>
+    <div style="border:dotted #AB3723 0.5vmin">
+      维修申请：
     <el-table :data="maintenance" border style="width: 100%;">
       <el-table-column prop="repairItem" label="维修项目"/>
       <el-table-column prop="pictureUrl" label="图片详情">
@@ -288,6 +293,7 @@ getMyMaintenance()
         </template>
       </el-table-column>
     </el-table>
+    </div>
     <el-upload class="avatar-uploader" :auto-upload="true" :show-file-list="false"
                action="/api/repair/uploadImage" name="file" :headers="{ 'Authorization': tokenStore.token }">
       <el-icon class="avatar-uploader-icon">
@@ -307,6 +313,9 @@ getMyMaintenance()
 
 .margin-top {
   margin-top: 20px;
+  border:solid #AB3723 0.5vmin;
+  border-radius:1%;
+  padding: 1vmin;
 }
 
 .status-out {

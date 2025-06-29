@@ -20,7 +20,7 @@ const aplPage = ref({
 
 
 const query = ref({
-  type:'',
+  type:'普通入住',
   park: '',
   building: '',
   floor: '',
