@@ -1,6 +1,5 @@
 import request from '@/utils/request.js';
 
-export const roomPageList = (query) =>request.get('/room/pageList',{params:query})
 
 export const getUserInfo = () =>request.get('/userInfo')
 

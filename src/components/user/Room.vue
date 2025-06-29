@@ -1,19 +1,39 @@
 <script setup>
-import { ref} from "vue";
-import {roomPageList} from "@/api/user.js";
+import {ref} from "vue";
+import {bedPageListService} from "@/api/bed.js";
+import {getParkListService} from "@/api/park.js";
+import {getBuildingListService, getFloorNumService} from "@/api/building.js";
+import {getRoomListService} from "@/api/room.js";
 
+const parkList = ref([])
+const getParkList = async () => {
+  const res = await getParkListService()
+  parkList.value = res.data
+}
+const buildingList = ref([])
+const getBuildingList = async () => {
+  const res = await getBuildingListService(query.value.parkId)
+  buildingList.value = res.data
+}
+const roomList = ref([])
+const getRoomList = async () => {
+  const result = await getRoomListService(query.value)
+  roomList.value = result.data
+}
+const getFloor = async () => {
+  const result = await getFloorNumService(query.value.buildingId)
+  query.value.floor = result.data
+}
 const query = ref({
-  pageNo: 1,
+  pageNum: 1,
   pageSize: 10,
-  total: 0,
-  park:'p',
-  building:'b',
-  floor:'f',
-  room:'r',
-  bed:'b'
+  parkId: null,
+  buildingId: null,
+  floor: null,
+  roomId: null
 })
-const rooms=ref([
-  query.value,query.value,query.value
+const rooms = ref([
+  query.value, query.value, query.value
 ])
 const pageNoChange = (value) => {
   query.value.pageNo = value
@@ -23,47 +43,57 @@ const pageSizeChange = (value) => {
   query.value.pageSize = value
   getRoomList()
 }
-const getRoomList = () => {
-  roomPageList(query.value).then(res => {
-    rooms.value = res.data.records
-    query.value.total = res.data.total
-  })
+
+// const getRoomList = async () => {
+//   bedPageListService(query.value).then(res => {
+//     rooms.value = res.data.records()
+//     query.value.total = res.data.total
+//   })
+// }
+const clearQuery = () => {
+  query.value = {
+    pageNum: 1,
+    pageSize: 10,
+    parkId: null,
+    buildingId: null,
+    floor: null,
+    roomId: null
+  }
 }
-
-getRoomList()
-
+getParkList()
 </script>
 
 <template>
   <div>
     <el-form :inline="true" :model="query" class="demo-form-inline">
       <el-form-item>
-        <el-select change v-model="query.park" placeholder="选择园区" style="width: 240px">
+        <el-select @change="getBuildingList"
+                   v-model="query.parkId" placeholder="选择园区" style="width: 240px">
           <el-option
-              v-for="park in query.parks"
-              :key="park"
-              :label="park"
-              :value="park"
+              v-for="park in parkList"
+              :key="park.parkId"
+              :label="park.name"
+              :value="park.parkId"
           />
         </el-select>
       </el-form-item>
       <el-form-item>
-        <el-select change v-model="query.building" placeholder="选择楼栋" style="width: 240px">
+        <el-select @change="getFloor" v-model="query.buildingId" placeholder="选择楼栋" style="width: 240px">
           <el-option
-              v-for="park in query.building"
-              :key="park"
-              :label="park"
-              :value="park"
+              v-for="building in buildingList"
+              :key="building.buildingId"
+              :label="building.buildingId % 100"
+              :value="building.buildingId"
           />
         </el-select>
       </el-form-item>
       <el-form-item>
-        <el-select change v-model="query.floor" placeholder="选择楼层" style="width: 240px">
+        <el-select @change="getRoomList" v-model="query.floor" placeholder="选择楼层" style="width: 240px">
           <el-option
-              v-for="park in query.floor"
-              :key="park"
-              :label="park"
-              :value="park"
+              v-for="floor in query.floor"
+              :key="query.floor"
+              :label="floor"
+              :value="query.floor"
           />
         </el-select>
       </el-form-item>
@@ -82,7 +112,7 @@ getRoomList()
       </el-form-item>
     </el-form>
 
-    <el-table :data="rooms" border style="width: 100%;" >
+    <el-table :data="rooms" border style="width: 100%;">
       <el-table-column prop="park" label="园区" width="180"/>
       <el-table-column prop="building" label="楼栋" width="180"/>
       <el-table-column prop="floor" label="楼层" width="180"/>
@@ -92,7 +122,7 @@ getRoomList()
     <el-pagination
         v-model:current-page="query.pageNo"
         v-model:page-size="query.pageSize"
-        :page-sizes="[100, 200, 300, 400]"
+        :page-sizes="[5, 10, 15, 20]"
         :background="true"
         layout="total, sizes, prev, pager, next, jumper"
         :total="query.total"
