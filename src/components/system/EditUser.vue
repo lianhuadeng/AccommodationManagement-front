@@ -1,6 +1,6 @@
 <script setup>
 import {computed, ref} from "vue";
-import {InfoFilled,UploadFilled} from '@element-plus/icons-vue'
+import {InfoFilled, UploadFilled} from '@element-plus/icons-vue'
 import {addUserList, addUserService, userList} from "@/api/sys.js";
 import {ElMessage, ElNotification} from "element-plus";
 import axios from "axios";
@@ -29,7 +29,7 @@ const multipleSelection = ref([])
 const query = ref({
   pageNum: '2',
   pageSize: '10',
-  total:0
+  total: 0
 })
 const newUser = ref({
   name: null,
@@ -39,7 +39,7 @@ const newUser = ref({
   major: null,
   grade: null,
   clazz: null,
-  gender:null,
+  gender: null,
   type: '学生'
 })
 const type = ref([
@@ -118,22 +118,22 @@ const submitUpload = async () => {
 
     const response = await addUserList(formData)
 
-    if (response.data && response.data.success) {
+    if (response.data) {
       uploadResult.value = {
         title: '导入成功',
         type: 'success',
-        message: response.data.message
+        message: response.data
       }
       ElNotification.success({
         title: '导入完成',
-        message: response.data.message,
+        message: response.data,
         duration: 5000
       })
     } else {
       uploadResult.value = {
         title: '导入失败',
         type: 'error',
-        message: response.data?.message || '未知错误'
+        message: response.data || '未知错误'
       }
     }
   } catch (error) {
@@ -197,10 +197,10 @@ const makeNewUser = async () => {
     return;
   }
   console.log(newUser.value)
-  const  result = await addUserService(newUser.value)
-  if (result.status){
+  const result = await addUserService(newUser.value)
+  if (result.status) {
     ElMessage.success(result.message)
-  }else {
+  } else {
     ElMessage.error(result.message)
   }
 }
@@ -217,12 +217,12 @@ const pageNoChange = (value) => {
   query.value.pageNum = value
   getUserList()
 }
-const getUserList = ()=>{
- userList(query.value).then(res=>{
-   users.value = res.data.items
-   // total.value = res.data.total
-   query.value.total=res.data.total
- })
+const getUserList = () => {
+  userList(query.value).then(res => {
+    users.value = res.data.items
+    // total.value = res.data.total
+    query.value.total = res.data.total
+  })
 }
 getUserList()
 
@@ -234,9 +234,11 @@ getUserList()
       <el-radio-button label="添加用户" value="添加用户"/>
       <el-radio-button @click="newUser={type:'学生'}" label="批量导入" value="批量导入"/>
     </el-radio-group>
-    <el-form v-if="op==='添加用户'" :rules="newRules" :model="newUser"  ref="ruleFormRef">
-      <el-form-item label="类型" prop="type" max-w-80>
-        <el-select v-model="newUser.type">
+    <el-form  v-if="op==='添加用户'" :rules="newRules" :model="newUser" ref="ruleFormRef" style="border:solid #AB3723 0.5vmin;margin-top: 1vmin">
+      <el-row :gutter="20">
+        <el-col :span="3">
+      <el-form-item label="类型" prop="type">
+        <el-select v-model="newUser.type" style="max-width: 40vmin">
           <el-option
               v-for="type in ['学生','教师','宿舍管理员','系统管理员','分管领导']"
               :key="type"
@@ -245,50 +247,62 @@ getUserList()
           />
         </el-select>
       </el-form-item>
+        </el-col>
+        <el-col :span="3">
       <el-form-item label="姓名" prop="name">
-        <el-input v-model="newUser.name"/>
+        <el-input v-model="newUser.name" style="max-width: 40vmin"/>
       </el-form-item>
+        </el-col>
+        <el-col :span="3">
       <el-form-item label="ID" prop="userId">
         <el-input v-model="newUser.userId"/>
       </el-form-item>
+        </el-col>
+      </el-row>
+      <el-row :gutter="20">
+        <el-col :span="3">
       <el-form-item label="学院" prop="college">
         <el-input v-model="newUser.college"/>
       </el-form-item>
-      <el-form-item label="专业" prop="major">
+        </el-col>
+        <el-col :span="3">
+        <el-form-item label="专业" prop="major">
         <el-input v-model="newUser.major"/>
       </el-form-item>
-      <el-form-item label="年级" prop="grade">
+        </el-col>
+        <el-col :span="2">
+        <el-form-item label="年级" prop="grade">
         <el-input v-model="newUser.grade"/>
       </el-form-item>
+        </el-col>
+      </el-row>
+      <el-row :gutter="20">
+        <el-col :span="3">
       <el-form-item label="班级" prop="clazz">
         <el-input v-model="newUser.clazz"/>
       </el-form-item>
-      <el-form-item label="性别" prop="gender">
-        <el-input v-model="newUser.gender"/>
+        </el-col>
+        <el-col :span="3">
+        <el-form-item label="性别" prop="gender">
+        <el-select v-model="newUser.gender" placeholder="请选择性别">
+          <el-option label="男" value="男"/>
+          <el-option label="女" value="女"/>
+        </el-select>
       </el-form-item>
-      <el-form-item>
+        </el-col>
+        <el-col :span="8">
+        <el-form-item>
         <el-button @click="makeNewUser" type="primary">提交</el-button>
       </el-form-item>
+        </el-col>
+      </el-row>
     </el-form>
-<!--    <el-upload v-else-if="op==='批量导入'"-->
-<!--               class="upload-demo"-->
-<!--               drag-->
-<!--               action=""-->
-<!--               multiple-->
-<!--    >-->
-<!--      <el-icon class="el-icon&#45;&#45;upload">-->
-<!--        <upload-filled/>-->
-<!--      </el-icon>-->
-<!--      <div class="el-upload__text">-->
-<!--        拖拽Excel文件到这里上传或者<em>点击上传</em>-->
-<!--      </div>-->
-<!--    </el-upload>-->
     <br>
-    <div>
+    <div v-if="op==='批量导入'">
       <div style="display: flex; gap: 20px; margin-bottom: 20px">
         <el-select v-model="userType" placeholder="请选择用户类型" clearable style="flex: 1">
-          <el-option label="学生" value="学生" />
-          <el-option label="教师" value="教师" />
+          <el-option label="学生" value="学生"/>
+          <el-option label="教师" value="教师"/>
         </el-select>
       </div>
       <el-upload
@@ -303,7 +317,9 @@ getUserList()
           :file-list="fileList"
           ref="uploadRef"
       >
-        <el-icon class="el-icon--upload"><upload-filled /></el-icon>
+        <el-icon class="el-icon--upload">
+          <upload-filled/>
+        </el-icon>
         <div class="el-upload__text">
           拖拽Excel文件到此处 或 <em>点击上传</em>
         </div>
@@ -333,13 +349,13 @@ getUserList()
             <el-text type="info">{{ uploadResult.details }}</el-text>
           </div>
         </el-alert>
+      </div>
     </div>
-    </div>
-    <el-table :data="users"  @selection-change="handleSelectionChange"
+    <el-table :data="users" @selection-change="handleSelectionChange"
               border style="width: 100%;">
       <el-table-column prop="name" label="姓名"/>
-      <el-table-column prop="userId" label="ID" />
-      <el-table-column prop="type" label="类型"  :filters="type" :filter-method="filterType"/>
+      <el-table-column prop="userId" label="ID"/>
+      <el-table-column prop="type" label="类型" :filters="type" :filter-method="filterType"/>
       <el-table-column type="selection"/>
     </el-table>
     <el-pagination
@@ -359,6 +375,7 @@ getUserList()
 .upload-demo {
   margin-top: 20px;
 }
+
 .el-upload__tip {
   font-size: 12px;
   color: #606266;
