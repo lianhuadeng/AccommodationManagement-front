@@ -18,7 +18,6 @@ import {myApplicationService, cancelApplicationService} from "@/api/application.
 import {myRepairService} from "@/api/repair.js";
 import {useTokenStore} from "@/stores/token.js";
 
-const tokenStore = useTokenStore()
 const router = useRouter()
 const route = useRoute()
 const application = ref([])
