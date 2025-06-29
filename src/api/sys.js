@@ -1,6 +1,8 @@
 import request from "@/utils/request.js";
 
-export const addStu=(user)=>request.post('/systemAdmin/addStudent',{user})
+export const addStudentService = (user)=> {
+    return request.post('/systemAdmin/addStudent', user)
+}
 
 export const addAdmin=(user)=>request.post('/systemAdmin/addAdmin',user)
 

@@ -1,7 +1,7 @@
 <script setup>
 import {ref} from "vue";
 import {InfoFilled, UploadFilled} from '@element-plus/icons-vue'
-import {addStu, userList} from "@/api/sys.js";
+import {addStudentService, userList} from "@/api/sys.js";
 import {ElMessage} from "element-plus";
 
 const op = ref('添加用户')
@@ -32,10 +32,11 @@ const newUser = ref({
   name: null,
   userId: null,
   password: null,
-  college:null,
-  major:null,
-  grade:null,
-  type:'学生'
+  college: null,
+  major: null,
+  grade: null,
+  clazz: null,
+  type: '学生'
 })
 const type = ref([
   {
@@ -65,9 +66,14 @@ const newRules = {
   grade: [{required: true, message: '请输入年级', trigger: 'blur'}]
 }
 
-const makeNewUser = () => {
+const makeNewUser = async () => {
   console.log(newUser.value)
-  addStu(newUser)
+  const  result = await addStudentService(newUser.value)
+  if (result.status){
+    ElMessage.success(result.message)
+  }else {
+    ElMessage.error(result.message)
+  }
 }
 
 const handleSelectionChange = (userSelect) => {
@@ -113,7 +119,7 @@ getUserList()
         <el-input v-model="newUser.name"/>
       </el-form-item>
       <el-form-item label="ID" prop="id">
-        <el-input v-model="newUser.id"/>
+        <el-input v-model="newUser.userId"/>
       </el-form-item>
       <el-form-item label="学院" prop="college">
         <el-input v-model="newUser.college"/>

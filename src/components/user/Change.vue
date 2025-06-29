@@ -1,6 +1,6 @@
 <script setup>
 import {ref} from "vue";
-import {applicationPageList, checkSubmit, getUserInfo, makeAppSubmit, roomPageList} from "@/api/user.js";
+import {applicationPageList, checkSubmit, getUserInfo, makeAppSubmit} from "@/api/user.js";
 import {useRoute} from "vue-router";
 import {ElMessage} from "element-plus";
 
