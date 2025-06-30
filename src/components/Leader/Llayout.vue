@@ -2,20 +2,17 @@
 import { ref, onMounted, watch } from 'vue'
 import {useRoute, useRouter} from 'vue-router'
 import { useTokenStore } from '@/stores/token.js';
-import { getUserNameByTokenService, userLogoutService} from '@/api/user.js';
+import {getUserInfoService, userLogoutService} from '@/api/user.js';
 import { ElMessage } from 'element-plus';
 const tokenStore = useTokenStore();
 
 const router = useRouter()
-const route = useRoute()
 
 const leader = ref({
   name:'丘俊杰',
   id:'2022141460001',
   contact:'wx:mx11224qiu',
-  password:'123456'
 })
-leader.value.id = route.query.id
 
 const activeIndex = ref('/index')
 const handleSelect = (key) => {
@@ -24,29 +21,25 @@ const handleSelect = (key) => {
 };
 
 const userName = ref("");
-const getUserNameByToken = async (token) => {
-  const result = await getUserNameByTokenService(token);
-  if (result.code === 401) {
-    userName.value = "";
-    ElMessage.error("登录信息已过期，请重新登录");
-    tokenStore.removeToken();
+const getUserInfo = async () => {
+  const result = await getUserInfoService();
+  if (result.status) {
+    userName.value = result.data.name;
+  } else {
+    ElMessage.error("登录过期，请重新登录");
   }
-  userName.value = result.data;
 }
 
 const logout = async () => {
   const token = tokenStore.token;
   await userLogoutService(token).then(() => {
     tokenStore.removeToken();
-    location.reload();
+    router.push('/login');
   });
 }
 
 onMounted(() => {
-  if (tokenStore.token) {
-    getUserNameByToken(tokenStore.token);
-  }
-
+  getUserInfo();
   // 初始设置 activeIndex
   activeIndex.value = router.currentRoute.value.path;
 });
@@ -73,7 +66,7 @@ watch(
       <div class="header-buttons">
         <template v-if="userName">
           <el-dropdown trigger="hover">
-            <el-link type="warning" :underline="true" @click="router.push('/user')">您好，{{ userName
+            <el-link type="warning" :underline="true" @click="router.push('/leader')">您好，{{ userName
               }}</el-link>
             <template #dropdown>
               <el-dropdown-menu>

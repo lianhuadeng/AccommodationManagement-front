@@ -10,10 +10,9 @@ const router = useRouter()
 const route = useRoute()
 
 const sys = ref({
-  name:'丘俊杰',
-  id:'2022141460001',
-  contact:'wx:mx11224qiu',
-  password:'123456'
+  name: null,
+  id: null,
+  contact: null
 })
 sys.value.id = route.query.id
 

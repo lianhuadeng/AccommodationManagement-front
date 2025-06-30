@@ -6,6 +6,12 @@ export const cancelApplicationService = (applicationId) => {
     return request.post("/application/cancel", params)
 }
 
+export const getReviewedApplicationService = () => {
+    return request.get('/application/reviewedApplication')
+}
+export const getProcessedApplicationService = () => {
+    return request.get('/application/processedApplication')
+}
 //获取用户宿舍调整申请
 export const myApplicationService = () => {
     return request.get('/application/myApplication')
