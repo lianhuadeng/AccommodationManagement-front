@@ -1,9 +1,8 @@
 <script setup>
 import {computed, ref} from "vue";
-import {InfoFilled, UploadFilled} from '@element-plus/icons-vue'
+import { UploadFilled} from '@element-plus/icons-vue'
 import {addUserList, addUserService, userList} from "@/api/sys.js";
 import {ElMessage, ElNotification} from "element-plus";
-import axios from "axios";
 
 const uploadRef = ref(null)
 const userType = ref('')
@@ -112,7 +111,6 @@ const submitUpload = async () => {
 
   try {
     const formData = new FormData()
-    console.log(file)
     formData.append('file', file)
     formData.append('userType', userType.value)
 
@@ -196,7 +194,6 @@ const makeNewUser = async () => {
     ElMessage.warning('请完善表单信息');
     return;
   }
-  console.log(newUser.value)
   const result = await addUserService(newUser.value)
   if (result.status) {
     ElMessage.success(result.message)
@@ -207,7 +204,6 @@ const makeNewUser = async () => {
 
 const handleSelectionChange = (userSelect) => {
   multipleSelection.value = userSelect
-  console.log(multipleSelection.value)
 }
 const pageSizeChange = (value) => {
   query.value.pageSize = value

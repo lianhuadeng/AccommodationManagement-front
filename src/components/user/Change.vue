@@ -1,12 +1,8 @@
 <script setup>
 import {ref} from "vue";
 import {
-  applicationPageList,
-  checkSubmit,
   getApplication,
   getLocationService,
-  getUserInfo,
-  makeAppSubmit
 } from "@/api/user.js";
 import {ElMessage} from "element-plus";
 import {getRoomListService} from "@/api/room.js";
