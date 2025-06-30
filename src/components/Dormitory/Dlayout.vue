@@ -8,16 +8,10 @@ const tokenStore = useTokenStore();
 
 const router = useRouter()
 
-const dor = ref({
-  name: null,
-  id: null,
-  contact: null
-})
-
 const activeIndex = ref('/index')
 const handleSelect = (key) => {
   activeIndex.value = key; // 更新当前选中的菜单
-  router.push({path: key, query: {id: dor.value.id}}); // 跳转到对应路由
+  router.push({path: key}); // 跳转到对应路由
 };
 
 const userName = ref("");

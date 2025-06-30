@@ -2,57 +2,23 @@
 //TODO - Update
 import {ref} from "vue";
 import {useRoute} from "vue-router";
-import {getStaffsList, mainAllocate} from "@/api/dormitory.js";
+import { mainAllocate} from "@/api/dormitory.js";
 import {ElMessage} from "element-plus";
+import {getStaffList, maintenanceList} from "@/api/maintenance.js";
 
 const route = useRoute()
-const maintenance = ref([
-  {
-    id:'1',
-    type:'水',
-    staff:'10',
-  },
-  {
-    id:'2',
-    type:'水',
-    staff:'11',
-    process:'待处理'
-  },
-  {
-    id:'3',
-    type:'水',
-    staff:'13',
-    process:'已处理'
-  }
-])
-const staffs = ref([
-  {
-    id:'1',
-    name:'1',
-    contact:'12'
-  },
-  {
-    id:'2',
-    name:'2',
-    contact:'12'
-  },
-  {
-    id:'3',
-
-    name:'3',
-    contact:'12'
-  },
-  {
-    id:'4',
-    name:'4',
-    contact:'12'
-  },
-  {
-    id:'5',
-    name:'5',
-    contact:'12'
-  }
-])
+const maintenances = ref([])
+const staffs = ref([])
+getStaffList().then(res=>{
+  console.log(res.data)
+  staffs.value = res.data
+})
+const getMaintenanceList = ()=>{
+  maintenanceList("待分配").then(res=>{
+    console.log(res.data)
+    maintenances.value=res.data
+  })
+}
 
 const makeMainExert = query=>{
   console.log(query)
@@ -63,35 +29,30 @@ const makeMainExert = query=>{
     })
   })
 }
-const getStaffs = ()=>{
-  getStaffsList().then(res=>{
-    staffs.value = res.data.records
-  })
-}
-getStaffs()
+getMaintenanceList()
 </script>
 
 <template>
 <div>
-  <el-table v-model="maintenance" :data="maintenance" border style="width: 100%;">
-    <el-table-column prop="userid" label="申请人id" max-width="150"/>
-    <el-table-column prop="location" label="维修地点" max-width="150"/>
-    <el-table-column prop="type" label="维修项目" max-width="150"/>
+  <el-table v-model="maintenances" :data="maintenances" border style="width: 100%;">
+    <el-table-column prop="studentId" label="申请人id" />
+    <el-table-column prop="location" label="维修地点" />
+    <el-table-column prop="repairItem" label="维修项目"/>
     <el-table-column label="维修人员" width="180">
       <template #default="{ row }">
-      <el-select  v-model="row.staff" placeholder="选择人员" style="max-width: 100px">
+      <el-select  v-model="row.maintenanceId" placeholder="选择人员" style="max-width: 100px">
         <el-option
             v-for="staff in staffs"
-            :key="staff.id"
+            :key="staff.userId"
             :label="staff.name"
-            :value="staff.id"
+            :value="staff.userId"
         />
       </el-select>
       </template>
     </el-table-column>
     <el-table-column label="操作" max-width="150">
     <template #default="{ row }">
-      <el-button @click="makeMainExert({id:row.id,staff:row.staff})" type="primary">执行</el-button>
+      <el-button v-if="row.maintenanceId!==null&&row.maintenanceId!==''" @click="makeMainExert({repairId:row.repairId,maintenanceId:row.maintenanceId})" type="primary">执行</el-button>
     </template>
   </el-table-column>
   </el-table>
