@@ -32,3 +32,7 @@ export const getApplicationListService = (query) => {
 export const getToBeReviewedApplication = () => {
     return request.get('/application/toBeReviewedApplication')
 }
+
+export const reviewApplicationService = (reviewData) => {
+    return request.post('/application/review', reviewData)
+}

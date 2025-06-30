@@ -19,17 +19,7 @@ const dor = ref({
   password: '123456'
 })
 
-const application = ref([
-  {
-    id:'',
-    type: '1',
-    userId: '1234',
-    process: '待处理'
-  },
-  {
-    type:'2'
-  }
-])
+const application = ref([])
 
 const getMyApplication = ()=>{
   getDorApl(dor.value.id)

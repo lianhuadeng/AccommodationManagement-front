@@ -1,99 +1,82 @@
 <script setup>
 import {ref} from "vue";
-import {aplExert, getDorApl} from "@/api/dormitory.js";
-import {useRoute} from "vue-router";
+import {useRouter} from "vue-router";
 import {getUserInfo} from "@/api/user.js";
 import {ElMessage} from "element-plus";
 import {aplAudit, makeReject} from "@/api/leader.js";
-//TODO - update
-const route = useRoute()
-const leader = ref({
-  name: '丘俊杰',
-  id: '2022141460001',
-  contact: 'wx:mx11224qiu',
-  park: '乐创',
-  building: '翠竹',
-  floor: '6',
-  room: '628',
-  bed: '3',
-  password: '123456'
+import {getToBeReviewedApplication, reviewApplicationService} from "@/api/application.js";
+
+const router = useRouter()
+
+const reviewData = ref({
+  applicationId: null,
+  opinion: ''
 })
-const reason = ref('')
-const noPass = ref(false)
-const formLabelWidth = '140px'
 
+const dialogVisible = ref(false)
 const application = ref([])
-
-const getMyApplication = () => {
-  getDorApl('待审核')
+const currentApplicationId = ref(null)
+const getMyApplication = async () => {
+  const result = await getToBeReviewedApplication()
+  if (result.status){
+    application.value = result.data
+  }else{
+    ElMessage.error(result.message)
+  }
 }
 
-const makeAplAudit = (id) => {
-  aplAudit(id).then(res => {
-    ElMessage({
-      message: '审核成功',
-      type: 'success'
-    })
-    getMyApplication()
-  })
+const reviewApplication = async (id) => {
+  reviewData.value.applicationId = id
+  const result = await reviewApplicationService(reviewData.value)
+  if (result.status){
+    ElMessage.success(result.message)
+    cancel()
+    await getMyApplication()
+  }else {
+    ElMessage.error(result.message)
+  }
 }
 
-const cancelReject = () => {
-  noPass.value = false
-  reason.value = ''
+const cancel = () => {
+  dialogVisible.value = false
+  reviewData.value.opinion = ''
 }
-
-const rejectApl = (id) => {
-  makeReject(id).then(res => {
-    ElMessage({
-      message: '执行成功',
-      type: 'success'
-    })
-  })
+const reject = ( applicationId ) => {
+  currentApplicationId.value = applicationId
+  console.log(currentApplicationId.value)
+  dialogVisible.value = true
 }
 getMyApplication()
-
-function getInfo() {
-  getUserInfo().then(res => {
-    leader.value = res.data.records
-  })
-}
-
-getInfo()
 </script>
 
 <template>
   <div>
     <el-table :data="application" border style="width: 100%;">
-      <el-table-column prop="type" label="类型" max-width="150"/>
-      <el-table-column prop="userId" label="申请人ID" width="180"/>
-      <el-table-column prop="changeId" label="交换人ID" width="180"/>
-      <el-table-column prop="park" label="园区" max-width="150"/>
-      <el-table-column prop="building" label="楼栋" max-width="150"/>
-      <el-table-column prop="floor" label="楼层" max-width="150"/>
-      <el-table-column prop="room" label="房间" max-width="150"/>
-      <el-table-column prop="bed" label="床位" max-width="150"/>
-      <el-table-column prop="outRoom" label="校外住宿" width="180"/>
-      <el-table-column prop="checkId" label="审核人ID" width="180"/>
-      <el-table-column label="操作" min-width="100">
+      <el-table-column prop="applicationType" label="类型" max-width="150"/>
+      <el-table-column prop="applierName" label="申请人" width="180"/>
+      <el-table-column prop="targetLocation" label="目标位置" max-width="150"/>
+      <el-table-column prop="applicationTime" label="申请时间" max-width="150"/>
+      <el-table-column prop="remark" label="备注" max-width="150"/>
+      <el-table-column prop="dormitoryAdminName" label="所属宿舍管理员" width="180"/>
+      <el-table-column label="操作" min-width="300">
         <template #default="{ row }">
-          <el-button @click="makeAplAudit(row.id)" type="primary">通过</el-button>
-          <el-button @click="noPass=true" type="danger">不通过</el-button>
+          <el-button @click="reviewApplication(row.applicationId)" type="primary">通过</el-button>
+          <el-button @click="reject(row.applicationId)" type="danger">不通过</el-button>
         </template>
       </el-table-column>
     </el-table>
-    <el-dialog v-model="noPass" title="拒绝备注" width="500" center :show-close=false :close-on-press-escape=false
-               :close-on-click-modal=false>
+    <el-dialog v-model="dialogVisible" title="审核意见" width="500" center :show-close=false :close-on-press-escape=false
+               :close-on-click-modal=false @close="cancel">
       <template #footer>
         <div class="dialog-footer">
           <el-input
-              v-model="reason"
+              v-model="reviewData.opinion"
               :rows="5"
               type="textarea"
-              placeholder="请输入具体内容..."
+              placeholder="请输入审核意见..."
           />
-          <el-button type="primary" @click="makeAplAudit">确认</el-button>
-          <el-button @click="cancelReject">取消</el-button>
+          <el-button type="primary" @click="reviewApplication(currentApplicationId)">确认</el-button>
+          <el-button @click="cancel">取消</el-button>
         </div>
       </template>
     </el-dialog>

@@ -6,15 +6,14 @@ import {
 } from '@element-plus/icons-vue'
 import {ref} from "vue";
 import {ElMessage} from "element-plus";
-import {useRoute} from "vue-router";
+import {useRouter} from "vue-router";
 import {
   changePasswordService,
   getUserInfoService,
   updateContactService
 } from "@/api/user.js";
 
-const route = useRoute()
-const application = ref([])
+const router = useRouter()
 
 const sys = ref({
   name: null,

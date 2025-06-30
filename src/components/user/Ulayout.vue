@@ -32,6 +32,7 @@ const getUserInfo = async () => {
     userName.value = result.data.name;
   } else {
     ElMessage.error("登录过期，请重新登录");
+    await router.push('/login');
   }
 }
 
