@@ -41,9 +41,9 @@ const makeNewPark = async () => {
   addParkService(newAddPark.value).then(res => {
     if (res.status) {
       clearForm()
-      ElMessage.success(res.data)
+      ElMessage.success(res.message)
     } else {
-      ElMessage.error(res.data)
+      ElMessage.error(res.message)
     }
   })
 }
@@ -59,9 +59,9 @@ const makeNewBuilding = async () => {
   addBuildingService(newAddBuilding.value).then(res => {
     if (res.status) {
       clearForm()
-      ElMessage.success(res.data)
+      ElMessage.success(res.message)
     } else {
-      ElMessage.error(res.data)
+      ElMessage.error(res.message)
     }
   })
 }
