@@ -9,12 +9,9 @@ import {ElMessage} from "element-plus";
 import {useRoute} from "vue-router";
 import {
   changePasswordService,
-  getApplication,
-  getUserInfo,
   getUserInfoService,
   updateContactService
 } from "@/api/user.js";
-import {myContact} from "@/api/all.js";
 
 const route = useRoute()
 const application = ref([])

@@ -93,11 +93,7 @@ const getLocationByUserId = async () => {
   newApplicationData.value.targetRoom = result.data.roomId
   newApplicationData.value.targetBed = result.data.bedId
 }
-//TODO: 用处在哪里？
-// const stu = ref()
-// getUserInfo().then(res=>{
-//   stu.value = res.data.records
-// })
+
 const applications = ref([])
 
 const getApplicationList = async ()=>{

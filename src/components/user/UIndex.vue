@@ -284,7 +284,7 @@ getMyMaintenance()
       <el-table-column prop="location" label="位置"/>
       <el-table-column prop="content" label="维修详情"/>
       <el-table-column prop="maintainerName" label="维修人员">
-<!--        TODO: 维修人联系方式-->
+<!--        TODO: 展示维修人联系方式-->
       </el-table-column>
       <el-table-column prop="status" label="处理进度" width="180">
         <template #default="{ row }">
