@@ -1,6 +1,6 @@
 <script setup>
 import {computed, ref} from "vue";
-import { UploadFilled} from '@element-plus/icons-vue'
+import {UploadFilled} from '@element-plus/icons-vue'
 import {addUserList, addUserService, userList} from "@/api/sys.js";
 import {ElMessage, ElNotification} from "element-plus";
 
@@ -38,7 +38,9 @@ const newUser = ref({
   major: null,
   grade: null,
   clazz: null,
-  gender: null,
+  sex: null,
+  title: null,
+  contact: null,
   type: '学生'
 })
 const type = ref([
@@ -182,7 +184,9 @@ const newRules = {
   major: [{required: true, message: '请输入专业', trigger: 'blur'}],
   grade: [{required: true, message: '请输入年级', trigger: 'blur'}],
   clazz: [{required: true, message: '请输入班级', trigger: 'blur'}],
-  gender: [{required: true, message: '请输入性别', trigger: 'blur'}]
+  sex: [{required: true, message: '请输入性别', trigger: 'blur'}],
+  contact:[{required:true,message:'请输入联系方式',trigger:'blur'}],
+  title:[{required:true,message:'请输入职称',trigger:'blur'}],
 
 }
 
@@ -230,66 +234,77 @@ getUserList()
       <el-radio-button label="添加用户" value="添加用户"/>
       <el-radio-button @click="newUser={type:'学生'}" label="批量导入" value="批量导入"/>
     </el-radio-group>
-    <el-form  v-if="op==='添加用户'" :rules="newRules" :model="newUser" ref="ruleFormRef" style="border:solid #AB3723 0.5vmin;margin-top: 1vmin">
+    <el-form v-if="op==='添加用户'" :rules="newRules" :model="newUser" ref="ruleFormRef"
+             style="border:solid #AB3723 0.5vmin;margin-top: 1vmin">
       <el-row :gutter="20">
         <el-col :span="3">
-      <el-form-item label="类型" prop="type">
-        <el-select v-model="newUser.type" style="max-width: 40vmin">
-          <el-option
-              v-for="type in ['学生','教师','宿舍管理员','系统管理员','分管领导']"
-              :key="type"
-              :label="type"
-              :value="type"
-          />
-        </el-select>
-      </el-form-item>
+          <el-form-item label="类型" prop="type">
+            <el-select v-model="newUser.type" style="max-width: 40vmin">
+              <el-option
+                  v-for="type in ['学生','教师','宿舍管理员','系统管理员','分管领导','维修人员']"
+                  :key="type"
+                  :label="type"
+                  :value="type"
+              />
+            </el-select>
+          </el-form-item>
         </el-col>
         <el-col :span="3">
-      <el-form-item label="姓名" prop="name">
-        <el-input v-model="newUser.name" style="max-width: 40vmin"/>
-      </el-form-item>
+          <el-form-item label="姓名" prop="name">
+            <el-input v-model="newUser.name" style="max-width: 40vmin"/>
+          </el-form-item>
         </el-col>
         <el-col :span="3">
-      <el-form-item label="ID" prop="userId">
-        <el-input v-model="newUser.userId"/>
-      </el-form-item>
+          <el-form-item label="ID" prop="userId">
+            <el-input v-model="newUser.userId"/>
+          </el-form-item>
         </el-col>
       </el-row>
       <el-row :gutter="20">
         <el-col :span="3">
-      <el-form-item label="学院" prop="college">
-        <el-input v-model="newUser.college"/>
-      </el-form-item>
+          <el-form-item v-if="newUser.type==='学生'||newUser.type==='教师'" label="学院" prop="college">
+            <el-input v-model="newUser.college"/>
+          </el-form-item>
         </el-col>
-        <el-col :span="3">
-        <el-form-item label="专业" prop="major">
-        <el-input v-model="newUser.major"/>
-      </el-form-item>
+        <el-col v-if="newUser.type==='学生'||newUser.type==='教师'" :span="3">
+          <el-form-item label="专业" prop="major">
+            <el-input v-model="newUser.major"/>
+          </el-form-item>
         </el-col>
-        <el-col :span="2">
-        <el-form-item label="年级" prop="grade">
-        <el-input v-model="newUser.grade"/>
-      </el-form-item>
+        <el-col v-if="newUser.type==='学生'" :span="2">
+          <el-form-item label="年级" prop="grade">
+            <el-input v-model="newUser.grade"/>
+          </el-form-item>
+        </el-col>
+        <el-col v-if="newUser.type==='教师'" :span="2">
+          <el-form-item label="职称" prop="title">
+            <el-input v-model="newUser.title"/>
+          </el-form-item>
         </el-col>
       </el-row>
       <el-row :gutter="20">
-        <el-col :span="3">
-      <el-form-item label="班级" prop="clazz">
-        <el-input v-model="newUser.clazz"/>
-      </el-form-item>
+        <el-col v-if="newUser.type==='学生'" :span="3">
+          <el-form-item label="班级" prop="clazz">
+            <el-input v-model="newUser.clazz"/>
+          </el-form-item>
         </el-col>
         <el-col :span="3">
-        <el-form-item label="性别" prop="gender">
-        <el-select v-model="newUser.gender" placeholder="请选择性别">
-          <el-option label="男" value="男"/>
-          <el-option label="女" value="女"/>
-        </el-select>
-      </el-form-item>
+          <el-form-item label="性别" prop="sex">
+            <el-select v-model="newUser.sex" placeholder="请选择性别">
+              <el-option label="男" value="男"/>
+              <el-option label="女" value="女"/>
+            </el-select>
+          </el-form-item>
+        </el-col>
+        <el-col :span="3">
+          <el-form-item label="联系方式" prop="contact">
+            <el-input v-model="newUser.contact"/>
+          </el-form-item>
         </el-col>
         <el-col :span="8">
-        <el-form-item>
-        <el-button @click="makeNewUser" type="primary">提交</el-button>
-      </el-form-item>
+          <el-form-item>
+            <el-button @click="makeNewUser" type="primary">提交</el-button>
+          </el-form-item>
         </el-col>
       </el-row>
     </el-form>
