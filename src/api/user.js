@@ -17,6 +17,10 @@ export const makeMaiSubmit = (query)=> request.post('user/maintenance',query)
 
 export const getHygiene = (roomId) => request.get('user/hygiene',{params:roomId})
 
+export const getCurrentUserLocationService = () =>{
+    return request.get('/getCurrentUserLocation')
+}
+
 export const getLocationService = (userId) =>{
     return request.get('/getLocationByUserId', { params: { userId } })
 }

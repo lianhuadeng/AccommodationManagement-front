@@ -67,6 +67,7 @@ const search = () => {
   getBedList()
 }
 getParkList()
+search()
 </script>
 
 <template>
@@ -137,6 +138,9 @@ getParkList()
           :formatter="(row, col, val) => val % 100"
       />
       <el-table-column prop="userName" label="所有者"/>
+      <template #empty>
+        <el-empty description="当前区域床位未划分" />
+      </template>
     </el-table>
     <el-pagination
         v-model:current-page="query.pageNum"

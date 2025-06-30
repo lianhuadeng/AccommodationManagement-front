@@ -2,13 +2,14 @@
 
 
 import {ref} from "vue";
-import {useRoute} from "vue-router";
-import {getUserInfo, makeMaiSubmit} from "@/api/user.js";
+import {useRouter} from "vue-router";
+import {getCurrentUserLocationService} from "@/api/user.js";
 import {Plus} from "@element-plus/icons-vue";
 import {ElMessage} from "element-plus";
 import {useTokenStore} from "@/stores/token.js";
+import {submitRepairService} from "@/api/repair.js";
 
-const route = useRoute()
+const router = useRouter();
 
 const options = [
   {
@@ -233,59 +234,71 @@ const stu = ref({
   password: '123456'
 })
 
-getUserInfo().then(res => {
-  stu.value = res.data.records
-})
+const currentUserLocation = ref('')
+const getCurrentUserLocation = async () => {
+  const result = await getCurrentUserLocationService()
+  if (result.status){
+    currentUserLocation.value = result.data
+  }else{
+    ElMessage.error(result.message)
+    await router.push('/login')
+  }
+}
 
-const query = ref({
+const newRepairModel = ref({
   location: null,
   content: null,
-  repairItem: null
+  repairItem: null,
+  pictureUrl: null
 })
 const type = ref()
-// const beforeAvatarUpload= (rawFile) => {
-//   if (rawFile.type !== 'image') {
-//     ElMessage.error('请上传图片文件!')
-//     return false
-//   }
-//   return true
-// }
-const handleAvatarSuccess = (response, uploadFile) => {
-  imageUrl.value = URL.createObjectURL(uploadFile.raw)
-  console.log(imageUrl.value)
-}
-const imageUrl = ref('')
 
-const onSubmit = ()=>{
-  makeMaiSubmit(query).then(res=>{
-    ElMessage({
-      message:'提交成功',
-      type:'success'
-    })
-  })
+const clearData = () => {
+  newRepairModel.value = {
+    location: null,
+    content: null,
+    repairItem: null,
+    pictureUrl: null
+  }
+  type.value = null
 }
 
+const handleAvatarSuccess = (result, uploadFile) => {
+  newRepairModel.value.pictureUrl = result.data
+}
+
+const onSubmit = async ()=>{
+  const result = await submitRepairService(newRepairModel.value)
+  if (result.status){
+    clearData()
+    ElMessage.success(result.message)
+    await router.push('/user/index')
+  }else{
+    ElMessage.error(result.message)
+  }
+}
+getCurrentUserLocation()
 </script>
 
 <template>
   <div>
     <el-form
         label-width="auto"
-        :model="query"
+        :model="newRepairModel"
         label-position="left"
     >
       <el-form-item>
         请输入维修地址：
-        <el-input :placeholder="'例：'+stu.park+'园区'+stu.building+'楼'+stu.floor+'层'+stu.room+'室'"
-                  style="max-width: 200px" v-model="query.location" type="text"></el-input>
+        <el-input :placeholder="currentUserLocation"
+                  style="max-width: 500px" v-model="newRepairModel.location" type="text"></el-input>
       </el-form-item>
       <el-form-item label="维修项目：" label-position="left">
-        <el-cascader-panel @change="query.repairItem=type[1]" v-model="type" style="width: fit-content" :options="options"/>
+        <el-cascader-panel @change="newRepairModel.repairItem=type[1]" v-model="type" style="width: fit-content" :options="options"/>
       </el-form-item>
       <el-form-item>
         具体内容：
         <el-input
-            v-model="query.content"
+            v-model="newRepairModel.content"
             :rows="5"
             type="textarea"
             placeholder="请输入具体内容..."
@@ -295,12 +308,13 @@ const onSubmit = ()=>{
         <el-upload
             class="avatar-uploader"
             action="/api/repair/uploadImage"
+            :auto-upload="true"
             :show-file-list="false"
             name = "file"
             :headers="{'Authorization': useTokenStore().token}"
             :on-success="handleAvatarSuccess"
         >
-          <img v-if="imageUrl" :src="imageUrl" class="avatar"/>
+          <img v-if="newRepairModel.pictureUrl" :src="newRepairModel.pictureUrl" class="avatar"/>
           <el-icon v-else class="avatar-uploader-icon">
             <Plus/>
           </el-icon>
