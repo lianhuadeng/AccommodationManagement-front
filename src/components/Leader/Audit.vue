@@ -22,17 +22,7 @@ const reason = ref('')
 const noPass = ref(false)
 const formLabelWidth = '140px'
 
-const application = ref([
-  {
-    id: '',
-    type: '1',
-    userId: '1234',
-    process: '待审核'
-  },
-  {
-    type: '2'
-  }
-])
+const application = ref([])
 
 const getMyApplication = () => {
   getDorApl('待审核')

@@ -28,3 +28,7 @@ export const getApplicationListService = (query) => {
     }
     return request.get('/application/pageList', { params })
 }
+
+export const getToBeReviewedApplication = () => {
+    return request.get('/application/toBeReviewedApplication')
+}

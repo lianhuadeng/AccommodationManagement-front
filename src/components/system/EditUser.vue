@@ -1,8 +1,9 @@
 <script setup>
 import {computed, ref} from "vue";
 import {UploadFilled} from '@element-plus/icons-vue'
-import {addUserList, addUserService, userList} from "@/api/sys.js";
+import {addUserList, addUserService} from "@/api/sys.js";
 import {ElMessage, ElNotification} from "element-plus";
+import {getUserPageListService} from "@/api/user.js";
 
 const uploadRef = ref(null)
 const userType = ref('')
@@ -11,25 +12,15 @@ const uploading = ref(false)
 const uploadResult = ref(null)
 const op = ref('添加用户')
 const ruleFormRef = ref();
-const users = ref([
-  {
-    type: '学生',
-    id: '1'
-  },
-  {
-    type: '宿舍管理员',
-    id: '2'
-  },
-  {
-    type: '分管领导',
-    id: '3'
-  }])
 const multipleSelection = ref([])
+
 const query = ref({
-  pageNum: '2',
-  pageSize: '10',
-  total: 0
+  pageNum: 1,
+  pageSize: 10,
+  type: null
 })
+const total = ref(0)
+
 const newUser = ref({
   name: null,
   userId: null,
@@ -43,11 +34,25 @@ const newUser = ref({
   contact: null,
   type: '学生'
 })
+
 const type = ref([
   {
     text: '学生',
     value: '学生'
   },
+  {
+    text: '教师',
+    value: '教师'
+  },
+  {
+    text: '系统管理员',
+    value: '系统管理员'
+  },
+  {
+    text: '维修管理员',
+    value: '维修管理员'
+  },
+
   {
     text: '宿舍管理员',
     value: '宿舍管理员'
@@ -55,7 +60,8 @@ const type = ref([
   {
     text: '分管领导',
     value: '分管领导'
-  }])
+  }
+])
 
 
 // 计算是否满足上传条件
@@ -185,27 +191,31 @@ const newRules = {
   grade: [{required: true, message: '请输入年级', trigger: 'blur'}],
   clazz: [{required: true, message: '请输入班级', trigger: 'blur'}],
   sex: [{required: true, message: '请输入性别', trigger: 'blur'}],
-  contact:[{required:true,message:'请输入联系方式',trigger:'blur'}],
-  title:[{required:true,message:'请输入职称',trigger:'blur'}],
-
+  contact: [{required: true, message: '请输入联系方式', trigger: 'blur'}],
+  title: [{required: true, message: '请输入职称', trigger: 'blur'}],
 }
 
 const makeNewUser = async () => {
-  const valid = await ruleFormRef.value.validate()
-      .then(() => true)
-      .catch(() => false);
-  if (!valid) {
-    ElMessage.warning('请完善表单信息');
-    return;
-  }
   const result = await addUserService(newUser.value)
   if (result.status) {
     ElMessage.success(result.message)
+    clearData()
   } else {
     ElMessage.error(result.message)
   }
 }
-
+const clearData = () => {
+  newUser.value.sex = null
+  newUser.value.title = null
+  newUser.value.contact = null
+  newUser.value.name = null
+  newUser.value.userId = null
+  newUser.value.password = null
+  newUser.value.college = null
+  newUser.value.major = null
+  newUser.value.grade = null
+  newUser.value.clazz = null
+}
 const handleSelectionChange = (userSelect) => {
   multipleSelection.value = userSelect
 }
@@ -217,13 +227,40 @@ const pageNoChange = (value) => {
   query.value.pageNum = value
   getUserList()
 }
-const getUserList = () => {
-  userList(query.value).then(res => {
-    users.value = res.data.items
-    // total.value = res.data.total
-    query.value.total = res.data.total
-  })
+const userList = ref([])
+const getUserList = async () => {
+  const result = await getUserPageListService(query.value)
+  if (result.status) {
+    userList.value = result.data.items
+    total.value = result.data.total
+  } else {
+    ElMessage.error(result.message)
+  }
+
 }
+
+// 行内筛选时触发
+const handleFilterChange = (filters) => {
+  // 从过滤器对象中获取type列的值
+  const typeFilter = filters.type;
+
+  // 处理可能的三种状态：
+  // 1. 有选中值（数组第一个元素）
+  // 2. 清空状态（空数组）
+  // 3. 未定义
+  if (Array.isArray(typeFilter) && typeFilter.length > 0) {
+    query.value.type = typeFilter[0]; // 取第一个元素
+  } else {
+    query.value.type = null; // 重置为null
+  }
+
+  // 重置到第一页
+  query.value.pageNum = 1;
+
+  // 重新获取数据
+  getUserList();
+};
+
 getUserList()
 
 </script>
@@ -362,20 +399,24 @@ getUserList()
         </el-alert>
       </div>
     </div>
-    <el-table :data="users" @selection-change="handleSelectionChange"
+    <el-table :data="userList" @selection-change="handleSelectionChange"
+              @filter-change="handleFilterChange"
               border style="width: 100%;">
       <el-table-column prop="name" label="姓名"/>
       <el-table-column prop="userId" label="ID"/>
-      <el-table-column prop="type" label="类型" :filters="type" :filter-method="filterType"/>
+      <el-table-column prop="type" :label="query.type || '类型'" :filter-multiple="false" :filters="type"
+                       column-key="type"
+                       v-model="query.type" :filter-method="filterType"
+                       :filtered-value="query.type ? [query.type] : []"/>
       <el-table-column type="selection"/>
     </el-table>
     <el-pagination
-        v-model:current-page="query.pageNo"
+        v-model:current-page="query.pageNum"
         v-model:page-size="query.pageSize"
         :page-sizes="[20,50,100,400]"
         :background="true"
-        layout="总, sizes, prev, pager, next, jumper"
-        :total="query.total"
+        layout="total, sizes, prev, pager, next, jumper"
+        :total="total"
         @size-change="pageSizeChange"
         @current-change="pageNoChange"
     />
