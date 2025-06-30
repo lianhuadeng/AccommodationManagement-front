@@ -10,3 +10,15 @@ export const cancelApplicationService = (applicationId) => {
 export const myApplicationService = () => {
     return request.get('/application/myApplication')
 }
+
+export const submitApplicationService = (data) => {
+    return request.post('/application/add', data)
+}
+
+export const getApplicationListService = (query) => {
+    const params = {
+        pageNum: query.pageNum,
+        pageSize: query.pageSize,
+    }
+    return request.get('/application/pageList', { params })
+}

@@ -6,6 +6,7 @@ import {useRoute} from "vue-router";
 import {getUserInfo, makeMaiSubmit} from "@/api/user.js";
 import {Plus} from "@element-plus/icons-vue";
 import {ElMessage} from "element-plus";
+import {useTokenStore} from "@/stores/token.js";
 
 const route = useRoute()
 
@@ -237,23 +238,21 @@ getUserInfo().then(res => {
 })
 
 const query = ref({
-  location: stu.value.park + '园区' + stu.value.building + '楼' + stu.value.floor + '层' + stu.value.room + '室',
-  content: '',
-  type: ''
+  location: null,
+  content: null,
+  repairItem: null
 })
-
-const beforeAvatarUpload= (rawFile) => {
-  if (rawFile.type !== 'image/jpeg') {
-    ElMessage.error('Avatar picture must be JPG format!')
-    return false
-  } else if (rawFile.size / 1024 / 1024 > 2) {
-    ElMessage.error('Avatar picture size can not exceed 2MB!')
-    return false
-  }
-  return true
-}
+const type = ref()
+// const beforeAvatarUpload= (rawFile) => {
+//   if (rawFile.type !== 'image') {
+//     ElMessage.error('请上传图片文件!')
+//     return false
+//   }
+//   return true
+// }
 const handleAvatarSuccess = (response, uploadFile) => {
   imageUrl.value = URL.createObjectURL(uploadFile.raw)
+  console.log(imageUrl.value)
 }
 const imageUrl = ref('')
 
@@ -277,11 +276,11 @@ const onSubmit = ()=>{
     >
       <el-form-item>
         请输入维修地址：
-        <el-input :placeholder="stu.park+'园区'+stu.building+'楼'+stu.floor+'层'+stu.room+'室'"
+        <el-input :placeholder="'例：'+stu.park+'园区'+stu.building+'楼'+stu.floor+'层'+stu.room+'室'"
                   style="max-width: 200px" v-model="query.location" type="text"></el-input>
       </el-form-item>
       <el-form-item label="维修项目：" label-position="left">
-        <el-cascader-panel @change="console.log(query.type)" v-model="query.type" style="width: fit-content" :options="options"/>
+        <el-cascader-panel @change="query.repairItem=type[1]" v-model="type" style="width: fit-content" :options="options"/>
       </el-form-item>
       <el-form-item>
         具体内容：
@@ -295,10 +294,11 @@ const onSubmit = ()=>{
       <el-form-item>
         <el-upload
             class="avatar-uploader"
-            action="/api/file/upload"
+            action="/api/repair/uploadImage"
             :show-file-list="false"
+            name = "file"
+            :headers="{'Authorization': useTokenStore().token}"
             :on-success="handleAvatarSuccess"
-            :before-upload="beforeAvatarUpload"
         >
           <img v-if="imageUrl" :src="imageUrl" class="avatar"/>
           <el-icon v-else class="avatar-uploader-icon">

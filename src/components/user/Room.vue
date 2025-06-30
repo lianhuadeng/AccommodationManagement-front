@@ -120,10 +120,22 @@ getParkList()
 
     <el-table :data="bedList" border style="width: 100%;">
       <el-table-column prop="parkName" label="园区"/>
-      <el-table-column prop="buildingId" label="楼栋"/>
+      <el-table-column
+          prop="buildingId"
+          label="楼栋"
+          :formatter="(row, col, val) => val % 100"
+      />
       <el-table-column prop="floor" label="楼层"/>
-      <el-table-column prop="roomId" label="房间"/>
-      <el-table-column prop="bedId" label="床位"/>
+      <el-table-column
+          prop="roomId"
+          label="房间"
+          :formatter="(row, col, val) => val % 10000"
+      />
+      <el-table-column
+          prop="bedId"
+          label="床位"
+          :formatter="(row, col, val) => val % 100"
+      />
       <el-table-column prop="userName" label="所有者"/>
     </el-table>
     <el-pagination

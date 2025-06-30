@@ -17,7 +17,9 @@ export const makeMaiSubmit = (query)=> request.post('user/maintenance',query)
 
 export const getHygiene = (roomId) => request.get('user/hygiene',{params:roomId})
 
-
+export const getLocationService = (userId) =>{
+    return request.get('/getLocationByUserId', { params: { userId } })
+}
 
 //修改密码
 export const changePasswordService = (passwordData) => {

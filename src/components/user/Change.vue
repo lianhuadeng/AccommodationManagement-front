@@ -1,124 +1,136 @@
 <script setup>
 import {ref} from "vue";
-import {applicationPageList, checkSubmit, getUserInfo, makeAppSubmit} from "@/api/user.js";
-import {useRoute} from "vue-router";
+import {
+  applicationPageList,
+  checkSubmit,
+  getApplication,
+  getLocationService,
+  getUserInfo,
+  makeAppSubmit
+} from "@/api/user.js";
 import {ElMessage} from "element-plus";
+import {getRoomListService} from "@/api/room.js";
+import {getParkListService} from "@/api/park.js";
+import {getBuildingListService, getFloorNumService} from "@/api/building.js";
+import {bedPageListService} from "@/api/bed.js";
+import {getApplicationListService, submitApplicationService} from "@/api/application.js";
 
-const route = useRoute()
+const parkList = ref([])
+const getParkList = async () => {
+  query.value.buildingId = null
+  query.value.floor = null
+  query.value.roomId = null
+  query.value.bedId = null
+  const res = await getParkListService()
+  parkList.value = res.data
+}
+const buildingList = ref([])
+const getBuildingList = async () => {
+  query.value.buildingId = null
+  query.value.floor = null
+  query.value.roomId = null
+  selectedFloor.value = null
+  query.value.bedId = null
+  const res = await getBuildingListService(query.value.parkId)
+  buildingList.value = res.data
+}
+const roomList = ref([])
+const getRoomList = async () => {
+  query.value.roomId = null
+  query.value.bedId = null
+  query.value.floor = selectedFloor.value
+  const result = await getRoomListService(query.value)
+  roomList.value = result.data
+}
+const bedList = ref([])
+const getBedList = async () => {
+  query.value.bedId = null
+  const result = await bedPageListService(query.value)
+  total.value = result.data.total
+  bedList.value = result.data.items
 
-const stu = ref()
-getUserInfo().then(res=>{
-  stu.value = res.data.records
-})
-const applications = ref([])
-
-const aplPage = ref({
-  pageNo:'1',
-  pageSize:'10',
-  total:''
-})
-
-
+}
+const maxFloor = ref(0)
+const selectedFloor = ref(null)
+const getFloor = async () => {
+  query.value.roomId = null
+  selectedFloor.value = null
+  query.value.bedId = null
+  const result = await getFloorNumService(query.value.buildingId)
+  query.value.floor = result.data
+  maxFloor.value = query.value.floor
+}
 const query = ref({
-  type:'普通入住',
-  park: '',
-  building: '',
-  floor: '',
-  room: '',
-  bed: '',
-  remark:'',
-  changeId:'',
-  outRoom:''
+  type: '普通入住',
+  pageNum: 1,
+  pageSize: 10,
+  parkId: null,
+  buildingId: null,
+  floor: null,
+  roomId: null,
+  bedId: null,
+  remark: null
 })
-const rooms = ref({
-  parks: ['f','24','24'],
-  buildings: ['t','g','h'],
-  floors: ['t','g','h'],
-  rooms:['t','g','h'],
-  beds: ['t','g','h']
-})
-const getRoomList = () => {
-  roomPageList(query.value).then(res => {
-    rooms.value = res.data.records()
-  })
-}
-
-
-const getApplicationList = ()=>{
-  applicationPageList(aplPage.value).then(res=>{
-    applications.value = res.data.records
-    aplPage.value.total = res.data.total
-  })
-}
-
+const total = ref(0)
 const pageNoChange = (value) => {
-  aplPage.value.pageNo = value
-  getApplicationList()
+  query.value.pageNum = value
+  getApplication()
 }
 const pageSizeChange = (value) => {
-  aplPage.value.pageSize = value
-  getApplicationList()
+  query.value.pageSize = value
+  getApplication()
+}
+const newApplicationData = ref({
+  applicationType: null,
+  targetPark: null,
+  targetBuilding: null,
+  targetRoom: null,
+  targetBed: null,
+  remark: null,
+  newAddress: null
+})
+const userIdForExchange = ref()
+const getLocationByUserId = async () => {
+  const result = await getLocationService(userIdForExchange.value)
+  newApplicationData.value.targetPark = result.data.parkId
+  newApplicationData.value.targetBuilding = result.data.buildingId
+  newApplicationData.value.targetRoom = result.data.roomId
+  newApplicationData.value.targetBed = result.data.bedId
+}
+//TODO: 用处在哪里？
+// const stu = ref()
+// getUserInfo().then(res=>{
+//   stu.value = res.data.records
+// })
+const applications = ref([])
+
+const getApplicationList = async ()=>{
+  const result = await getApplicationListService(query.value)
+  if (result.status){
+    total.value = result.data.total
+    applications.value = result.data.items
+  }else {
+    ElMessage.error(result.message)
+  }
 }
 
-const selectChange1 = ()=>{
-  getRoomList()
-  query.value.building=''
-  query.value.floor=''
-  query.value.room=''
-  query.value.bed=''
-}
 
-const selectChange2 = ()=>{
-  getRoomList()
-  query.value.floor=''
-  query.value.room=''
-  query.value.bed=''
-}
-
-const selectChange3 = ()=>{
-  getRoomList()
-  query.value.room=''
-  query.value.bed=''
-}
-
-const selectChange4 = ()=>{
-  getRoomList()
-  query.value.bed=''
-}
-
-const onSubmit = () =>{
-  checkSubmit().then(res=>{
-    if(res.data){
-      ElMessage({
-        message: '你已有尚未完成的申请！',
-        type: 'error',
-      })
-    }
-    else{
-      try
-      {
-        makeAppSubmit(query).then(res => {
-          if (res.data) {
-            ElMessage({
-              message: '已提交申请！',
-              type: 'success',
-            })
-            getApplicationList()
-          } else {
-            ElMessage({
-              message: '提交失败！',
-              type: 'error',
-            })
-          }
-        })
-      }catch{
-        ElMessage({
-          message: '提交失败！',
-          type: 'error',
-        })
-      }
-    }
-  })
+const onSubmit = async () =>{
+  newApplicationData.value.applicationType = query.value.type
+  if (query.value.type === '普通入住' || query.value.type === '普通调整'){
+    newApplicationData.value.targetPark = query.value.parkId
+    newApplicationData.value.targetBuilding = query.value.buildingId
+    newApplicationData.value.targetRoom = query.value.roomId
+    newApplicationData.value.targetBed = query.value.bedId
+  }else if (query.value.type === '学生互换'){
+    await getLocationByUserId()
+  }
+  const result = await submitApplicationService(newApplicationData.value)
+  if (result.status){
+    ElMessage.success('提交成功')
+  }else{
+    ElMessage.error(result.message)
+  }
 }
 
 const getStatusClass = (status) => {
@@ -128,7 +140,7 @@ const getStatusClass = (status) => {
     'status-completed': status === '已处理'
   }
 }
-getRoomList()
+getParkList()
 getApplicationList()
 </script>
 
@@ -150,54 +162,54 @@ getApplicationList()
         </el-select>
       </el-form-item>
       <el-form-item v-if="query.type==='普通入住'||query.type==='普通调整'">
-        <el-form @click="getRoomList" :inline="true" :model="query" class="demo-form-inline">
+        <el-form :inline="true" :model="query" class="demo-form-inline">
           <el-form-item label="选择入住位置：">
-            <el-select @change="selectChange1" v-model="query.park" placeholder="选择园区" style="width: 240px">
+            <el-select @change="getBuildingList" v-model="query.parkId" placeholder="选择园区" style="width: 240px">
               <el-option
-                  v-for="park in rooms.parks"
-                  :key="park"
-                  :label="park"
-                  :value="park"
+                  v-for="park in parkList"
+                  :key="park.parkId"
+                  :label="park.name"
+                  :value="park.parkId"
               />
             </el-select>
           </el-form-item>
           <el-form-item>
-            <el-select @change="selectChange2" v-model="query.building" placeholder="选择楼栋" style="width: 240px">
+            <el-select @change="getFloor" v-model="query.buildingId" placeholder="选择楼栋" style="width: 240px">
               <el-option
-                  v-for="park in rooms.buildings"
-                  :key="park"
-                  :label="park"
-                  :value="park"
+                  v-for="building in buildingList"
+                  :key="building.buildingId"
+                  :label="building.buildingId % 100"
+                  :value="building.buildingId"
               />
             </el-select>
           </el-form-item>
           <el-form-item>
-            <el-select @change="selectChange3" v-model="query.floor" placeholder="选择楼层" style="width: 240px">
+            <el-select @change="getRoomList" v-model="selectedFloor" placeholder="选择楼层" style="width: 240px">
               <el-option
-                  v-for="park in rooms.floors"
-                  :key="park"
-                  :label="park"
-                  :value="park"
+                  v-for="floor in maxFloor"
+                  :key="query.floor"
+                  :label="floor"
+                  :value="floor"
               />
             </el-select>
           </el-form-item>
           <el-form-item>
-            <el-select @change="selectChange4" v-model="query.room" placeholder="选择房间" style="width: 240px">
+            <el-select @change="getBedList" v-model="query.roomId" placeholder="选择房间" style="width: 240px">
               <el-option
-                  v-for="park in rooms.rooms"
-                  :key="park "
-                  :label="park"
-                  :value="park"
+                  v-for="room in roomList"
+                  :key="room.roomId "
+                  :label="room.roomId%10000"
+                  :value="room.roomId"
               />
             </el-select>
           </el-form-item>
           <el-form-item>
-            <el-select @change="getRoomList" v-model="query.bed" placeholder="选择床位" style="width: 240px">
+            <el-select v-model="query.bedId" placeholder="选择床位" style="width: 240px">
               <el-option
-                  v-for="park in rooms.beds"
-                  :key="park "
-                  :label="park"
-                  :value="park"
+                  v-for="bed in bedList"
+                  :key="bed.bedId"
+                  :label="bed.bedId%100"
+                  :value="bed.bedId"
               />
             </el-select>
           </el-form-item>
@@ -205,16 +217,16 @@ getApplicationList()
       </el-form-item>
       <el-form-item v-if="query.type==='学生互换'" >
         请输入对方学号：
-        <el-input style="max-width: 200px" v-model="query.changeId" type="text"></el-input>
+        <el-input style="max-width: 200px" v-model="userIdForExchange" type="number"></el-input>
       </el-form-item>
       <el-form-item v-if="query.type==='校外住宿'" >
         请输入校外住址：
-        <el-input style="max-width: 200px" v-model="query.changeId" type="text"></el-input>
+        <el-input style="max-width: 200px" v-model="newApplicationData.newAddress" type="text"></el-input>
       </el-form-item>
       <el-form-item v-if="query.type!==''&&query.type!=='null'&&query.type!=='申请列表'">
         备注：
         <el-input
-            v-model="query.remark"
+            v-model="newApplicationData.remark"
             :rows="5"
             type="textarea"
             placeholder="Please input"
@@ -227,28 +239,29 @@ getApplicationList()
       </el-form-item>
       <el-form-item v-if="query.type==='申请列表'">
         <el-table :data="applications" border style="width: 100%;" >
-          <el-table-column prop="type" label="类型" max-width="150"/>
-          <el-table-column prop="id" label="申请ID" width="180"/>
-          <el-table-column prop="changeId" label="交换人ID" width="180"/>
-          <el-table-column prop="park" label="园区" max-width="150"/>
-          <el-table-column prop="building" label="楼栋" max-width="150"/>
-          <el-table-column prop="floor" label="楼层" max-width="150"/>
-          <el-table-column prop="room" label="房间" max-width="150"/>
-          <el-table-column prop="bed" label="床位" max-width="150"/>
-          <el-table-column prop="outRoom" label="校外住宿" width="180"/>
-          <el-table-column prop="process" label="处理进度" max-width="150">
+          <el-table-column prop="applicationType" label="类型" max-width="150"/>
+          <el-table-column prop="applicationId" label="申请ID" width="180"/>
+          <el-table-column prop="targetPark" label="目标园区" max-width="150"/>
+          <el-table-column prop="targetBuilding" label="目标楼栋" max-width="150" :formatter="(row, col, val) => val % 100"/>
+          <el-table-column prop="targetRoom" label="目标房间" max-width="150" :formatter="(row, col, val) => val % 10000"/>
+          <el-table-column prop="targetBed" label="目标床位" max-width="150" :formatter="(row, col, val) => val % 100"/>
+          <el-table-column prop="newAddress" label="校外住宿" width="180"/>
+          <el-table-column prop="remark" label="备注" width="180"/>
+          <el-table-column prop="opinion" label="审核意见" width="180"/>
+          <el-table-column prop="applicationTime" label="申请时间" width="180"/>
+          <el-table-column prop="status" label="处理进度" max-width="150">
             <template #default="{ row }">
-              <span :class="getStatusClass(row.process)">{{ row.process }}</span>
+              <span :class="getStatusClass(row.status)">{{ row.status }}</span>
             </template>
           </el-table-column>
         </el-table>
         <el-pagination
-            v-model:current-page="aplPage.pageNo"
-            v-model:page-size="aplPage.pageSize"
-            :page-sizes="[100, 200, 300, 400]"
+            v-model:current-page="query.pageNum"
+            v-model:page-size="query.pageSize"
+            :page-sizes="[5, 10, 15, 20]"
             :background="true"
             layout="total, sizes, prev, pager, next, jumper"
-            :total="aplPage.total"
+            :total="total"
             @size-change="pageSizeChange"
             @current-change="pageNoChange"
         />

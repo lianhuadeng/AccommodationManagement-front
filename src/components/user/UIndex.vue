@@ -293,12 +293,6 @@ getMyMaintenance()
       </el-table-column>
     </el-table>
     </div>
-    <el-upload class="avatar-uploader" :auto-upload="true" :show-file-list="false"
-               action="/api/repair/uploadImage" name="file" :headers="{ 'Authorization': tokenStore.token }">
-      <el-icon class="avatar-uploader-icon">
-        <Plus />
-      </el-icon>
-    </el-upload>
   </div>
 
 </template>
