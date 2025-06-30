@@ -8,4 +8,7 @@ export const mainAllocate = (query)=>request.post('dormitory/allocate',query)//�
 
 export const getStaffsList = ()=>request.get('dormitory/staffs')
 
+//获取当前宿舍管理员的楼栋
+export const getMyBuilding = ()=>request.get('/building/list2')
+
 export const getDorMain = ()=>request.get('dormitory/main')
