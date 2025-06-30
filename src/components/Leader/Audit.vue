@@ -6,6 +6,7 @@ import {getUserInfo} from "@/api/user.js";
 import {ElMessage} from "element-plus";
 import {aplAudit, makeReject} from "@/api/leader.js";
 
+const route = useRoute()
 const leader = ref({
   name: '丘俊杰',
   id: '2022141460001',
@@ -19,19 +20,10 @@ const leader = ref({
 })
 const reason = ref('')
 const noPass = ref(false)
+const formLabelWidth = '140px'
 
-const application = ref([
-  {
-    id: '',
-    type: '1',
-    userId: '1234',
-    process: '待审核'
-  },
-  {
-    type: '2'
-  }
-])
-let aplId
+const application = ref([])
+
 const getMyApplication = () => {
   getDorApl('待审核')
 }
@@ -58,11 +50,6 @@ const rejectApl = (id) => {
       type: 'success'
     })
   })
-}
-
-const noPassApl = (id)=>{
-  noPass.value=true
-  aplId = id
 }
 getMyApplication()
 
@@ -91,7 +78,7 @@ getInfo()
       <el-table-column label="操作" min-width="100">
         <template #default="{ row }">
           <el-button @click="makeAplAudit(row.id)" type="primary">通过</el-button>
-          <el-button @click="noPassApl(row.id)" type="danger">不通过</el-button>
+          <el-button @click="noPass=true" type="danger">不通过</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -105,7 +92,7 @@ getInfo()
               type="textarea"
               placeholder="请输入具体内容..."
           />
-          <el-button type="primary" @click="rejectApl(aplId)">确认</el-button>
+          <el-button type="primary" @click="makeAplAudit">确认</el-button>
           <el-button @click="cancelReject">取消</el-button>
         </div>
       </template>
