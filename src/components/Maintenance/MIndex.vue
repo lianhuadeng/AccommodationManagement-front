@@ -2,111 +2,128 @@
 import {
   Iphone,
   User,
-  List
+  List, Lock
 } from '@element-plus/icons-vue'
 import {ref} from "vue";
 import {ElMessage} from "element-plus";
-import {useRoute} from "vue-router";
-import { getUserInfo} from "@/api/user.js";
-import {myContact} from "@/api/all.js";
-import {getMain} from "@/api/staff.js";
+import {changePasswordService, getUserInfoService, updateContactService} from "@/api/user.js";
+import {getProcessedRepairService} from "@/api/repair.js";
+import {useRouter} from "vue-router";
 
-const route = useRoute()
-const maintenance = ref([
-  {
-    type: '1',
-    id: '1234',
-    staff: '',
-    process: '待处理',
-    content: '客厅外的阳台被封窗，与客厅连为一体，这样的设计不仅拓宽了室内空间，也让阳光和新鲜空气能够更加自由地进入整个房间；\n' +
-        '\n' +
-        '客厅和餐厅的连通设计，使整个居住空间显得更加宽敞和开阔，简洁的装修风格在这里得到了完美的呈现，既实用又美观。\n' +
-        '\n' +
-        '将两个卧室和卫生间的门洞改到客厅的侧面墙上，这样的布局调整让卫生间的空间更加宽敞，也使整个房间的动线更加合理。这样的设计优化了空间利用率，提升了居住的舒适度。'
-  },
-  {
-    type: '2'
-  }
-])
+const router = useRouter()
+const maintenance = ref([])
 
 const staff = ref({
-  name: '丘俊杰',
-  id: '2022141460001',
-  contact: 'wx:mx11224qiu',
-  password: '123456'
+  name: null,
+  id: null,
+  contact: null,
+  location: null
 })
 
-staff.value.id = route.query.id
-
-function getInfo() {
-  getUserInfo().then(res => {
-    staff.value = res.data.records
-  })
+const getInfo = async () => {
+  try {
+    const result = await getUserInfoService();
+    staff.value.id = result.data.userId
+    staff.value.name = result.data.name
+    staff.value.contact = result.data.contact
+  } catch (error) {
+    ElMessage.error("登录过期，请重新登录")
+    await router.push('/login');
+  }
 }
 
 getInfo();
+// ----------修改密码--------------
 const resetPassword = ref(false)
-const oldPassword = ref('')//旧密码
-const newPassword = ref('')//新密码
-const newAgainPassword = ref('') //再次输入新密码
+const changePasswordData = ref({
+  oldPassword: null,
+  newPassword: null,
+  confirmPassword: null
+})
+const rules = {
+  oldPassword: [
+    {required: true, message: '请输入旧密码', trigger: 'blur'},
+  ],
+  newPassword: [
+    {required: true, message: '请输入新密码', trigger: 'blur'},
+    {min: 6, max: 20, message: '密码长度在 6 到 20 个非空字符', trigger: 'blur'},
+    {
+      validator: (rule, value, callback) => {
+        const hasUpperCase = /[A-Z]/.test(value);
+        const hasLowerCase = /[a-z]/.test(value);
+        const hasNumber = /[0-9]/.test(value);
+        if (!hasUpperCase || !hasLowerCase || !hasNumber) {
+          callback(new Error('密码必须包含大小写字母和数字!'));
+        } else {
+          callback();
+        }
+      },
+      trigger: 'blur'
+    }
+  ],
+  confirmPassword: [
+    {required: true, message: '请再次输入密码', trigger: 'blur'},
+    {min: 6, max: 16, message: '密码长度在 6 到 16 个字符', trigger: 'blur'},
+    {
+      validator: (rule, value, callback) => {
+        if (value === '') {
+          callback(new Error('请再次输入密码!'))
+        } else if (value !== changePasswordData.value.newPassword) {
+          callback(new Error('两次输入的密码不一致!'))
+        } else {
+          callback()
+        }
+      }, trigger: 'blur'
+    }
+  ]
+}
+
+const changePassword = async () => {
+
+  const result = await changePasswordService(changePasswordData.value);
+  if (result.status) {
+    ElMessage({
+      message: result.message,
+      type: 'success'
+    })
+    await router.push('/login');
+  } else {
+    ElMessage({
+      message: result.message,
+      type: 'error',
+    });
+  }
+}
 
 const formLabelWidth = '140px'
 
-const solveContact = () => {
-  myContact(staff.value.contact).then(res => {
-    if (res.data.message)
-      ElMessage({
-        message: '保存成功！',
-        type: 'success'
-      })
-    getInfo()
-  })
+const updateContact = async () => {
+  const result = await updateContactService(staff.value.contact);
+  if (result.status) {
+    await getInfo()
+    ElMessage.success(result.message)
+  } else {
+    ElMessage.error(result.message)
+  }
 }
 
-const resetCheck = () => {
-  // resetPassword.value = false
-  if (!oldPassword.value || !newPassword.value || !newAgainPassword.value) {
-    ElMessage({
-      message: '请输入完整！',
-      type: "error"
-    })
-    return
+const getMyMainExert = async () => {
+  const result = await getProcessedRepairService()
+  if (result.status){
+    maintenance.value = result.data
+  }else {
+    ElMessage.error(result.message)
   }
-  if (oldPassword.value !== staff.value.password) {
-    ElMessage({
-      message: '旧密码错误！',
-      type: "error"
-    })
-  } else if (newPassword.value !== newAgainPassword.value) {
-    ElMessage({
-      message: '新密码不一致！',
-      type: "error"
-    })
-  } else {
-    ElMessage({
-      message: '修改成功！',
-      type: "success"
-    })
-    resetPassword.value = false
-    getInfo()
-  }
-}
-const getMyMainExert = () => {
-  getMain('待处理').then(res => {
-    maintenance.value = res.data.records
-  })
 }
 const clearForm = () => {
-  resetPassword.value = true
-  oldPassword.value = ''
-  newPassword.value = ''
-  newAgainPassword.value = ''
+  changePasswordData.value.oldPassword = null
+  changePasswordData.value.newPassword = null
+  changePasswordData.value.confirmPassword = null
 }
-
 
 const lookContent = ref({
   isLook: false,
-  content: 'wufjal'
+  content: null
 })
 
 const lookLook = (content) => {
@@ -127,23 +144,26 @@ getMyMainExert()
         border
     >
       <template #extra>
-        <el-button @click="solveContact" type="primary">保存</el-button>
-        <el-button @click="clearForm" type="danger">修改密码</el-button>
-        <el-dialog v-model="resetPassword" title="修改密码" width="500" center>
+        <el-button @click="updateContact" type="primary">保存</el-button>
+        <el-button @click="resetPassword = true;" type="danger">修改密码</el-button>
+        <el-dialog v-model="resetPassword" title="修改密码" width="500" center @close="clearForm">
           <template #footer>
             <div class="dialog-footer">
-              <el-form>
-                <el-form-item label="旧密码" :label-width="formLabelWidth">
-                  <el-input type="text" v-model="oldPassword" autocomplete="off"></el-input>
+              <el-form :model="changePasswordData" :rules="rules">
+                <el-form-item label="旧密码" :label-width="formLabelWidth" prop="oldPassword">
+                  <el-input :prefix-icon="Lock" type="text" v-model="changePasswordData.oldPassword" autocomplete="off"
+                            placeholder="请输入旧密码"></el-input>
                 </el-form-item>
                 <el-form-item label="新密码" :label-width="formLabelWidth">
-                  <el-input type="password" v-model="newPassword" autocomplete="off"></el-input>
+                  <el-input :prefix-icon="Lock" type="password" v-model="changePasswordData.newPassword" autocomplete="off"
+                            placeholder="请输入新密码"></el-input>
                 </el-form-item>
                 <el-form-item label="确认新密码" :label-width="formLabelWidth">
-                  <el-input type="password" v-model="newAgainPassword" autocomplete="off"></el-input>
+                  <el-input :prefix-icon="Lock" type="password" v-model="changePasswordData.confirmPassword" autocomplete="off"
+                            placeholder="请再次输入密码"></el-input>
                 </el-form-item>
               </el-form>
-              <el-button type="primary" @click="resetCheck">确认</el-button>
+              <el-button type="primary" @click="changePassword">确认</el-button>
               <el-button @click="resetPassword = false">取消</el-button>
             </div>
           </template>
@@ -185,9 +205,9 @@ getMyMainExert()
     </el-descriptions>
     维修记录：
     <el-table :data="maintenance" border style="width: 100%;">
-      <el-table-column prop="type" label="维修项目" max-width="150"/>
+      <el-table-column prop="repairItem" label="维修项目" max-width="150"/>
       <el-table-column prop="location" label="地点" max-width="150"/>
-      <el-table-column prop="dormitory" label="分配人ID" width="180"/>
+      <el-table-column prop="dormitoryName" label="分配人" width="180"/>
       <el-table-column label="操作" width="100">
         <template #default="{row}">
           <el-button @click="lookLook(row.content)">查看内容</el-button>

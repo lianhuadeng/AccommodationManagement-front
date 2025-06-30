@@ -291,6 +291,7 @@ getCurrentUserLocation()
         请输入维修地址：
         <el-input :placeholder="currentUserLocation"
                   style="max-width: 500px" v-model="newRepairModel.location" type="text"></el-input>
+        <el-button style="margin-left: 10px"  type="success" @click="onSubmit">提交</el-button>
       </el-form-item>
       <el-form-item label="维修项目：" label-position="left">
         <el-cascader-panel @change="newRepairModel.repairItem=type[1]" v-model="type" style="width: fit-content" :options="options"/>
@@ -321,20 +322,30 @@ getCurrentUserLocation()
         </el-upload>
       </el-form-item>
 
-      <el-form-item>
-        <el-button type="success" @click="onSubmit">提交</el-button>
-      </el-form-item>
+
     </el-form>
 
   </div>
 </template>
 
 <style scoped lang="scss">
+.avatar-uploader {
+  width: 300px;
+  height: 300px;
+  position: relative;
+  overflow: hidden;
+  border: 1px dashed var(--el-border-color);
+  border-radius: 6px;
+  cursor: pointer;
+}
+
 .avatar-uploader .avatar {
-  width: 120px;
-  height: 120px;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
   display: block;
 }
+
 </style>
 
 <style>

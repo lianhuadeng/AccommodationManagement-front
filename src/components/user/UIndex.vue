@@ -22,7 +22,6 @@ const router = useRouter()
 const route = useRoute()
 const application = ref([])
 const maintenance = ref([])
-const tokenStore = useTokenStore()
 const stu = ref({
   name: null,
   id: null,
@@ -99,6 +98,7 @@ const changePassword = async () => {
         message: result.message,
         type: 'success'
       })
+      await router.push('/login');
     } else {
     ElMessage({
       message: result.message,
