@@ -9,3 +9,5 @@ export const setScore = (record) =>{
     params.append('score',record.score)
     return request.post('/disciplinary/setScore',params)
 }
+
+export const getStudentDisciplinary = ()=>request.get('/disciplinary/myDisciplinary')
