@@ -1,43 +1,46 @@
 <script setup>
-import {disciplinaryList, setScore} from "@/api/leader.js";
 import {ref} from "vue";
+import {ElMessage} from "element-plus";
+import {getToBeRateDisciplinary, setScore} from "@/api/disciplinary.js";
 
 const disList = ref([])
-const query = ref({
-  pageNum: '1',
-  pageSize: '10',
-  total: 0
-})
-//Todo:disList应该只包含未评分的记录
 
-
-const score = ref(0)
-const getDisciplinaryList = () => {
-  disciplinaryList(query.value).then(res => {
-    disList.value = res.data.items
-    query.value.total = res.data.total
-  })
+const getDisciplinaryList = async () => {
+  const result = await getToBeRateDisciplinary()
+  if (result.status) {
+    disList.value = result.data
+  } else {
+    ElMessage.error(result.message)
+  }
 }
-const subScore = (record) => {
-  setScore(record)
-  score.value = 0
-  getDisciplinaryList()
+const subScore = async (record) => {
+  const result = await setScore(record)
+  if (result.status) {
+    await getDisciplinaryList()
+    ElMessage.success(result.message)
+  } else {
+    ElMessage.error(result.message)
+  }
 }
 getDisciplinaryList()
 </script>
 
 <template>
   <el-table :data="disList" border style="width: 100%;">
-    <el-table-column prop="dormitoryId" label="宿管ID"/>
-    <el-table-column prop="studentId" label="学生ID"/>
+    <el-table-column prop="dormitoryName" label="所属宿管"/>
+    <el-table-column prop="studentName" label="违纪人"/>
     <el-table-column prop="reason" label="违纪缘由"/>
+    <el-table-column prop="location" label="违纪寝室"/>
+    <el-table-column prop="time" label="记录时间"/>
     <el-table-column label="扣分">
-      <el-input v-model="score" type="number" placeholder="请输入扣分"></el-input>
+      <template #default="{ row }">
+        <el-input v-model.number="row.score" type="number" placeholder="请输入扣分"></el-input>
+      </template>
     </el-table-column>
     <el-table-column label="扣分操作">
       <template #default="{ row }">
-        <el-button :disabled="score===null||score===0||score===''"
-                   @click="subScore({disciplinaryId:row.disciplinaryId,score:parseInt(score)})" type="primary">确定
+        <el-button :disabled="row.score===null||row.score===0||row.score===''"
+                   @click="subScore({disciplinaryId:row.disciplinaryId,score:row.score})" type="primary">确定
         </el-button>
       </template>
     </el-table-column>
