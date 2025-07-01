@@ -1,5 +1,4 @@
 <script setup>
-//TODO - Update
 import {ref} from "vue";
 import {ElMessage} from "element-plus";
 import {getMain, mainExert} from "@/api/staff.js";

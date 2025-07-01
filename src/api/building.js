@@ -7,3 +7,7 @@ export const getBuildingListService = (parkId) => {
 export const getFloorNumService = (buildingId) => {
     return request.get('/building/getFloorNum', { params: { buildingId } })
 }
+
+export const getManagedBuildingService = () => {
+    return request.get('/building/getManagedBuilding')
+}

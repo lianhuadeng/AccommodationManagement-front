@@ -1,5 +1,4 @@
 <script setup>
-//TODO - Update
 import {ref} from "vue";
 import {addDiscipline, getMyBuilding} from "@/api/dormitory.js";
 import {ElMessage} from "element-plus";
