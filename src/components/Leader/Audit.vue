@@ -48,13 +48,13 @@ getMyApplication()
 <template>
   <div>
     <el-table :data="application" border style="width: 100%;">
-      <el-table-column prop="applicationType" label="类型" max-width="150"/>
-      <el-table-column prop="applierName" label="申请人" width="180"/>
-      <el-table-column prop="targetLocation" label="目标位置" max-width="150"/>
-      <el-table-column prop="applicationTime" label="申请时间" max-width="150"/>
-      <el-table-column prop="remark" label="备注" max-width="150"/>
-      <el-table-column prop="dormitoryAdminName" label="所属宿舍管理员" width="180"/>
-      <el-table-column label="操作" min-width="300">
+      <el-table-column prop="applicationType" label="类型"/>
+      <el-table-column prop="applierName" label="申请人" />
+      <el-table-column prop="targetLocation" label="目标位置" />
+      <el-table-column prop="applicationTime" label="申请时间" />
+      <el-table-column prop="remark" label="备注" />
+      <el-table-column prop="dormitoryAdminName" label="所属宿舍管理员" />
+      <el-table-column label="操作" >
         <template #default="{ row }">
           <el-button @click="reviewApplication(row.applicationId)" type="primary">通过</el-button>
           <el-button @click="reject(row.applicationId)" type="danger">不通过</el-button>

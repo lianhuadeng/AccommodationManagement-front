@@ -50,8 +50,8 @@ getMyRoomList()
           </el-form-item>
         </el-col>
         <el-col :span="3">
-          <el-form-item label="房间" prop="studentId">
-            <el-select v-model="newRecord.studentId" style="max-width: 40vmin">
+          <el-form-item label="房间" prop="roomId">
+            <el-select v-model="newRecord.roomId" style="max-width: 40vmin">
               <el-option
                   v-for="floor in roomList"
                   :key="floor"
