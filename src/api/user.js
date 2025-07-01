@@ -57,3 +57,7 @@ export const getUserPageListService = (query) => {
     }
     return request.get('/systemAdmin/userPageList', { params })
 }
+
+export const getMaintenanceAdminListService = () => {
+    return request.get('/maintenanceList')
+}

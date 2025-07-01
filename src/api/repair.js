@@ -15,3 +15,11 @@ export const getAllocatedRepairService = () => {
 export const getProcessedRepairService = () => {
     return request.get('/repair/getProcessedRepair')
 }
+
+export const getToBeAllocatedRepairService = () => {
+    return request.get('/repair/toBeAllocatedRepair')
+}
+
+export const allocateRepairService = (data) => {
+    return request.post('/repair/allocate', data)
+}

@@ -1,46 +1,46 @@
 <script setup>
 //TODO - update
-import {ref} from "vue";
-import {aplExert, getDorApl} from "@/api/dormitory.js";
-import {useRoute} from "vue-router";
-import {getUserInfo} from "@/api/user.js";
-import {ElMessage} from "element-plus";
-
-const route = useRoute()
-const dor = ref({
-  name: '丘俊杰',
-  id: '2022141460001',
-  contact: 'wx:mx11224qiu',
-  park:'乐创',
-  building:'翠竹',
-  floor:'6',
-  room:'628',
-  bed:'3',
-  password: '123456'
-})
-
-const application = ref([])
-
-const getMyApplication = ()=>{
-  getDorApl(dor.value.id)
-}
-
-const makeAplExert = (id)=>{
-  aplExert(id).then(res=>{
-    ElMessage({
-      message:'处理成功',
-      type:'success'
-    })
-    getMyApplication()
-  })
-}
-getMyApplication()
-function getInfo() {
-  getUserInfo().then(res => {
-    dor.value = res.data.records
-  })
-}
-getInfo()
+// import {ref} from "vue";
+// import {aplExert, getDorApl} from "@/api/dormitory.js";
+// import {useRoute} from "vue-router";
+// import {getUserInfo} from "@/api/user.js";
+// import {ElMessage} from "element-plus";
+//
+// const route = useRoute()
+// const dor = ref({
+//   name: '丘俊杰',
+//   id: '2022141460001',
+//   contact: 'wx:mx11224qiu',
+//   park:'乐创',
+//   building:'翠竹',
+//   floor:'6',
+//   room:'628',
+//   bed:'3',
+//   password: '123456'
+// })
+//
+// const application = ref([])
+//
+// const getMyApplication = ()=>{
+//   getDorApl(dor.value.id)
+// }
+//
+// const makeAplExert = (id)=>{
+//   aplExert(id).then(res=>{
+//     ElMessage({
+//       message:'处理成功',
+//       type:'success'
+//     })
+//     getMyApplication()
+//   })
+// }
+// getMyApplication()
+// function getInfo() {
+//   getUserInfo().then(res => {
+//     dor.value = res.data
+//   })
+// }
+// getInfo()
 </script>
 
 <template>

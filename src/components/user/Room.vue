@@ -128,7 +128,7 @@ search()
       />
       <el-table-column prop="floor" label="楼层"/>
       <el-table-column
-          prop="studentId"
+          prop="roomId"
           label="房间"
           :formatter="(row, col, val) => val % 10000"
       />
