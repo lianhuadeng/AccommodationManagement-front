@@ -1,5 +1,12 @@
 import request from "@/utils/request.js";
 
-export const getMain = (state)=>request.get('maintenance/list',{params:state})
+export const getMain = (status)=>{
 
-export const mainExert=(id)=>request.post('maintenance/make',id)
+    return request.get('/repair/maintenanceAdminRepairs',{params:status})
+}
+
+export const mainExert=(repairId)=>{
+    const params = new URLSearchParams()
+    params.append('repairId',repairId)
+    return request.post('repair/maintain',params)
+}

@@ -237,8 +237,4 @@ getMyAppAudit()
 .status-completed {
   color: #67c23a;
 }
-
-.status-out {
-  color: #f56c6c;
-}
 </style>
