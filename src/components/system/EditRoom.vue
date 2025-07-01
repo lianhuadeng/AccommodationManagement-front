@@ -25,9 +25,23 @@ const parks = ref([])
 const newParkRules = {
   name: [{required: true, message: '请输入园区名字', trigger: 'blur'}],
   type: [{required: true, message: '请选择类型', trigger: 'blur'}],
+  buildingNum:[{required: true, message: '请输入楼栋', trigger: 'blur'},
+    {type:"number" ,min:1,message: '最少1栋！',trigger: 'blur'}],
+  floorNum:[{required: true, message: '请输入楼层', trigger: 'blur'},
+    {type:"number" ,min:1,message: '最少1层！',trigger: 'blur'}],
+  roomNumPerFloor:[{required: true, message: '请输入楼层', trigger: 'blur'},
+    {type:"number" ,min:1,message: '最少1间！',trigger: 'blur'}],
+  bedNumPerRoom:[{required: true, message: '请输入楼层', trigger: 'blur'},
+    {type:"number" ,min:1,message: '最少1床！',trigger: 'blur'}]
 }
 const newBuildingRules = {
-  parkId: [{required: true, message: '请选择园区', trigger: 'blur'}]
+  parkId: [{required: true, message: '请选择园区', trigger: 'blur'}],
+  floorNum:[{required: true, message: '请输入楼层', trigger: 'blur'},
+    {type:"number" ,min:1,message: '最少1层！',trigger: 'blur'}],
+  roomNumPerFloor:[{required: true, message: '请输入楼层', trigger: 'blur'},
+    {type:"number" ,min:1,message: '最少1间！',trigger: 'blur'}],
+  bedNumPerRoom:[{required: true, message: '请输入楼层', trigger: 'blur'},
+    {type:"number" ,min:1,message: '最少1床！',trigger: 'blur'}]
 }
 
 const makeNewPark = async () => {
@@ -55,7 +69,6 @@ const makeNewBuilding = async () => {
     ElMessage.warning('请完善表单信息');
     return;
   }
-  console.log(newAddBuilding.value)
   addBuildingService(newAddBuilding.value).then(res => {
     if (res.status) {
       clearForm()
@@ -116,24 +129,24 @@ getParkList()
         </el-col>
         <el-col :span="3">
           <el-form-item label="楼栋数" prop="buildingNum">
-            <el-input v-model="newAddPark.buildingNum"/>
+            <el-input type="number" v-model.number="newAddPark.buildingNum"/>
           </el-form-item>
         </el-col>
       </el-row>
       <el-row :gutter="20">
         <el-col :span="3">
           <el-form-item label="每栋楼层数" prop="floorNum">
-            <el-input v-model="newAddPark.floorNum"/>
+            <el-input type="number" v-model.number="newAddPark.floorNum"/>
           </el-form-item>
         </el-col>
         <el-col :span="3">
           <el-form-item label="每层房间数" prop="roomNumPerFloor">
-            <el-input v-model="newAddPark.roomNumPerFloor"/>
+            <el-input type="number" v-model.number="newAddPark.roomNumPerFloor"/>
           </el-form-item>
         </el-col>
-        <el-col :span="2">
+        <el-col :span="3">
           <el-form-item label="每房床位数" prop="bedNumPerRoom">
-            <el-input v-model="newAddPark.bedNumPerRoom"/>
+            <el-input type="number" v-model.number="newAddPark.bedNumPerRoom"/>
           </el-form-item>
         </el-col>
         <el-col :span="8">
@@ -153,26 +166,26 @@ getParkList()
                   v-for="park in parks"
                   :key="park.parkId"
                   :label="park.name"
-                  :value="park.parkId"
+                  :value= park.parkId
               />
             </el-select>
           </el-form-item>
         </el-col>
         <el-col :span="3">
           <el-form-item label="楼层数目" prop="floorNum">
-            <el-input v-model="newAddBuilding.floorNum" style="max-width: 40vmin"/>
+            <el-input type="number" v-model.number="newAddBuilding.floorNum" style="max-width: 40vmin"/>
           </el-form-item>
         </el-col>
       </el-row>
       <el-row :gutter="20">
         <el-col :span="3">
           <el-form-item label="每楼房间数" prop="roomNumPerFloor">
-            <el-input v-model="newAddPark.roomNumPerFloor"/>
+            <el-input type="number" v-model.number="newAddBuilding.roomNumPerFloor"/>
           </el-form-item>
         </el-col>
         <el-col :span="3">
           <el-form-item label="每房床位数" prop="bedNumPerRoom">
-            <el-input v-model="newAddBuilding.bedNumPerRoom"/>
+            <el-input type="number" v-model.number="newAddBuilding.bedNumPerRoom"/>
           </el-form-item>
         </el-col>
         <el-col :span="8">
