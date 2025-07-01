@@ -61,7 +61,7 @@ watch(
                active-text-color="#ffd04b" background-color="#AB3723" @select="handleSelect">
         <el-menu-item index="/leader/index">个人中心</el-menu-item>
         <el-menu-item index="/leader/audit">申请审核</el-menu-item>
-        <el-menu-item index="/leader/change">违纪扣分</el-menu-item>
+        <el-menu-item index="/leader/check">违纪扣分</el-menu-item>
         <el-menu-item index="/leader/batch">批量调整</el-menu-item>
       </el-menu>
       <div class="header-buttons">

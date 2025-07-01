@@ -1,12 +1,8 @@
 <script setup>
 import {ref} from "vue";
 import {useRouter} from "vue-router";
-import {getUserInfo} from "@/api/user.js";
 import {ElMessage} from "element-plus";
-import {aplAudit, makeReject} from "@/api/leader.js";
 import {getToBeReviewedApplication, reviewApplicationService} from "@/api/application.js";
-
-const router = useRouter()
 
 const reviewData = ref({
   applicationId: null,
