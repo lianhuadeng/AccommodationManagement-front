@@ -1,7 +1,5 @@
 <script setup>
-//TODO - update
 import {ref} from "vue";
-import {aplExert} from "@/api/dormitory.js";
 import { useRouter} from "vue-router";
 import {ElMessage} from "element-plus";
 import {getToBeProcessedApplication, processApplicationService} from "@/api/application.js";
@@ -22,6 +20,7 @@ const getMyApplication = async ()=>{
 const makeAplExert = async (id)=>{
   const result  = await processApplicationService(id)
   if (result.status){
+    await getMyApplication()
     ElMessage.success(result.message)
   }else{
     ElMessage.error(result.message)
