@@ -1,15 +1,8 @@
 import request from '@/utils/request.js';
 
-
-export const getUserInfo = () =>request.get('/userInfo')
-
-
 export const getApplication = () => request.get('user/myapplication')
 
-export const getMaintenance = () =>request.get('user/maintenance')
-
-
-export const getHygiene = (roomId) => request.get('user/hygiene',{params:roomId})
+export const getHygiene = (query) => request.get('/hygiene-check/pageList',{params:query})
 
 export const getCurrentUserLocationService = () =>{
     return request.get('/getCurrentUserLocation')

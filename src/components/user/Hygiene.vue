@@ -1,29 +1,23 @@
 <script setup>
 //TODO - Implement
-import {useRoute} from "vue-router";
 import {ref} from "vue";
-import {getHygiene, getUserInfo} from "@/api/user.js";
-
-const route = useRoute()
-const stu = ref(
-    {
-
-    }
-)
-const checkResult = ref();
-
-getUserInfo().then(res=>{
-  stu.value = res.data
+import {getHygiene} from "@/api/user.js";
+const query = ref({
+  pageNum:'1',
+  pageSize:'10',
+  total:0
 })
-getHygiene(stu.value.room).then(res=>{
-  checkResult.value = res.data.records
+
+const checkResult = ref([]);
+
+getHygiene().then(res=>{
+  checkResult.value = res.data
 })
 
 
 </script>
 
 <template>
-
 
 
 </template>

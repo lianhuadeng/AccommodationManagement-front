@@ -1,7 +1,8 @@
 <script setup>
 //TODO - Update
 import {ref} from "vue";
-import {getMyBuilding} from "@/api/dormitory.js";
+import {addHygieneCheck, getMyBuilding} from "@/api/dormitory.js";
+import {ElMessage} from "element-plus";
 
 const ruleFormRef = ref();
 const newRecord = ref({
@@ -15,7 +16,7 @@ const roomList = ref([])
 const newRecordRules = {
   roomId: [{required: true, message: '请选择房间', trigger: 'blur'}],
   score: [{required: true, message: '请输入得分', trigger: 'blur'},
-          {min:1,max:100,message:'请输入正确的分数（1-100）',trigger: 'blur'}],
+          {type:"number",min:1,max:100,message:'请输入正确的分数（1-100）',trigger: 'blur'}],
   reason: [{required: true, message: '请输入扣分理由', trigger: 'blur'}]
 }
 const building = ref({})
@@ -26,8 +27,13 @@ const getMyRoomList = () => {
      floorNum.value=building.value.floorNum
   })
 }
-const makeNewRecord = ()=>{
-
+const makeNewRecord = async ()=>{
+  const result = await addHygieneCheck(newRecord)
+  if (result.status) {
+    ElMessage.success(result.message)
+  } else {
+    ElMessage.error(result.message)
+  }
 }
 getMyRoomList()
 </script>
@@ -63,7 +69,7 @@ getMyRoomList()
         </el-col>
         <el-col :span="3">
           <el-form-item label="得分" prop="score">
-            <el-input v-model="newRecord.score"/>
+            <el-input type="number" v-model.number="newRecord.score"/>
           </el-form-item>
         </el-col>
       </el-row>

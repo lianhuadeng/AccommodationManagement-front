@@ -1,12 +1,8 @@
 <script setup>
 //TODO - update
 import {ref} from "vue";
-import {aplExert} from "@/api/dormitory.js";
-import { useRouter} from "vue-router";
 import {ElMessage} from "element-plus";
 import {getToBeProcessedApplication, processApplicationService} from "@/api/application.js";
-
-const router = useRouter()
 
 const application = ref([])
 
