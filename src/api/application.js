@@ -36,3 +36,13 @@ export const getToBeReviewedApplication = () => {
 export const reviewApplicationService = (reviewData) => {
     return request.post('/application/review', reviewData)
 }
+
+export const getToBeProcessedApplication = () => {
+    return request.get('/application/toBeProcessedApplication')
+}
+
+export const processApplicationService = (applicationId) => {
+    const params = new URLSearchParams();
+    params.append('applicationId', applicationId);
+    return request.post("/application/process", params)
+}
