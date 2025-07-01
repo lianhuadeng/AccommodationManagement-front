@@ -6,7 +6,6 @@ import { mainAllocate} from "@/api/dormitory.js";
 import {ElMessage} from "element-plus";
 import {getStaffList, maintenanceList} from "@/api/maintenance.js";
 
-const route = useRoute()
 const maintenances = ref([])
 const staffs = ref([])
 getStaffList().then(res=>{
@@ -27,6 +26,7 @@ const makeMainExert = query=>{
       message:'成功分配',
       type:'success'
     })
+    getMaintenanceList()
   })
 }
 getMaintenanceList()

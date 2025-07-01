@@ -20,7 +20,6 @@ const leader = ref({
   location: null
 })
 
-
 const getInfo = async () => {
   try {
     const result = await getUserInfoService();
