@@ -1,7 +1,6 @@
 <script setup>
 import {disciplinaryList, setScore} from "@/api/leader.js";
 import {ref} from "vue";
-import {ElMessage} from "element-plus";
 
 const disList = ref([])
 const query = ref({
@@ -10,7 +9,6 @@ const query = ref({
   total: 0
 })
 //Todo:disList应该只包含未评分的记录
-
 
 
 const score = ref(0)
@@ -34,7 +32,7 @@ getDisciplinaryList()
     <el-table-column prop="studentId" label="学生ID"/>
     <el-table-column prop="reason" label="违纪缘由"/>
     <el-table-column label="扣分">
-      <el-input  v-model="score" type="number" placeholder="请输入扣分"></el-input>
+      <el-input v-model="score" type="number" placeholder="请输入扣分"></el-input>
     </el-table-column>
     <el-table-column label="扣分操作">
       <template #default="{ row }">
