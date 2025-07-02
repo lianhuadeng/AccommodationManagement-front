@@ -75,7 +75,7 @@ getMaintenanceList()
         </template>
       </el-table-column>
       <el-table-column label="操作" max-width="150">
-        <el-button @click="allocate" type="primary">分配</el-button>
+        <el-button :disabled="allocateData.maintenanceId===null||allocateData.maintenanceId===''"  @click="allocate" type="primary">分配</el-button>
       </el-table-column>
     </el-table>
   </div>
