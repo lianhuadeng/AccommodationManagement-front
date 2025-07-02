@@ -184,8 +184,7 @@ const filterType = (value, row) => {
 
 const newRules = {
   name: [{required: true, message: '请输入姓名', trigger: 'blur'}],
-  userId: [{required: true, message: '请输入ID', trigger: 'blur'},
-    {type: 'number',min:100000,message: 'ID最短为6位！',trigger: 'blur'}],
+  userId: [{required: true, message: '请输入ID', trigger: 'blur'}],
   type: [{required: true, message: '请选择类型', trigger: 'blur'}],
   college: [{required: true, message: '请输入学院', trigger: 'blur'}],
   major: [{required: true, message: '请输入专业', trigger: 'blur'}],
@@ -197,13 +196,6 @@ const newRules = {
 }
 
 const makeNewUser = async () => {
-  const valid = await ruleFormRef.value.validate()
-      .then(() => true)
-      .catch(() => false);
-  if (!valid) {
-    ElMessage.warning('请完善表单信息');
-    return;
-  }
   const result = await addUserService(newUser.value)
   if (result.status) {
     ElMessage.success(result.message)
@@ -284,6 +276,9 @@ const getUnManagedBuilding = async () => {
 }
 
 const setAdminType = async (row) => {
+  if (row.newType === '宿舍管理员') {
+
+  }
   const result = await setAdminTypeService(row.userId, row.newType)
   if (result.status) {
     ElMessage.success(result.message)
@@ -336,7 +331,7 @@ getUserList()
         </el-col>
         <el-col :span="3">
           <el-form-item label="ID" prop="userId">
-            <el-input type="number" v-model.number="newUser.userId"/>
+            <el-input v-model="newUser.userId"/>
           </el-form-item>
         </el-col>
       </el-row>
@@ -442,7 +437,22 @@ getUserList()
         </el-alert>
       </div>
     </div>
-
+    <el-table :data="userList" @selection-change="handleSelectionChange"
+              @filter-change="handleFilterChange"
+              border style="width: 100%;">
+      <el-table-column prop="name" label="姓名"/>
+      <el-table-column prop="userId" label="ID"/>
+      <el-table-column prop="type" :label="query.type || '类型'" :filter-multiple="false" :filters="type"
+                       column-key="type"
+                       v-model="query.type" :filter-method="filterType"
+                       :filtered-value="query.type ? [query.type] : []"/>
+      <el-table-column label="权限调整">
+        <template #default="{row}">
+          <el-select
+              v-if="row.type!=='学生'"
+              v-model="row.newType"
+              style="width: 120px"
+          >
             <el-option
                 v-for="type in ['宿舍管理员','系统管理员','分管领导','维修管理员']"
                 :key="type"
