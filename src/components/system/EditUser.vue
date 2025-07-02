@@ -3,7 +3,8 @@ import {computed, ref} from "vue";
 import {UploadFilled} from '@element-plus/icons-vue'
 import {addUserList, addUserService} from "@/api/sys.js";
 import {ElMessage, ElNotification} from "element-plus";
-import {getUserPageListService} from "@/api/user.js";
+import {getUserPageListService, setAdminTypeService} from "@/api/user.js";
+import {assignDormitoryService, getUnManagedBuildingService} from "@/api/building.js";
 
 const uploadRef = ref(null)
 const userType = ref('')
@@ -62,7 +63,6 @@ const type = ref([
     value: '分管领导'
   }
 ])
-
 
 // 计算是否满足上传条件
 const canUpload = computed(() => {
@@ -231,7 +231,10 @@ const userList = ref([])
 const getUserList = async () => {
   const result = await getUserPageListService(query.value)
   if (result.status) {
-    userList.value = result.data.items
+    userList.value = result.data.items.map(user => ({
+      ...user,               // 展开原有属性
+      newType: user.type    // 添加新属性
+    }))
     total.value = result.data.total
   } else {
     ElMessage.error(result.message)
@@ -261,8 +264,43 @@ const handleFilterChange = (filters) => {
   getUserList();
 };
 
-getUserList()
+const selectedBuilding = ref(null)
+const unManagedBuilding = ref([])
+const getUnManagedBuilding = async () => {
+  const result = await getUnManagedBuildingService()
+  if (result.status) {
+    unManagedBuilding.value = result.data
+  } else {
+    ElMessage.error(result.message)
+  }
+}
 
+const setAdminType = async (row) => {
+  if (row.newType === '宿舍管理员') {
+
+  }
+  const result = await setAdminTypeService(row.userId, row.newType)
+  if (result.status) {
+    ElMessage.success(result.message)
+    await getUserList()
+  } else {
+    ElMessage.error(result.message)
+  }
+}
+
+const handleSelectBuilding = async (row) => {
+  const result = await assignDormitoryService(selectedBuilding.value, row.userId)
+  if (result.status) {
+    ElMessage.success(result.message)
+    console.log(selectedBuilding.value)
+    await getUserList()
+  } else {
+    ElMessage.error(result.message)
+  }
+  selectedBuilding.value = null
+}
+
+getUserList()
 </script>
 
 <template>
@@ -408,7 +446,47 @@ getUserList()
                        column-key="type"
                        v-model="query.type" :filter-method="filterType"
                        :filtered-value="query.type ? [query.type] : []"/>
-      <el-table-column type="selection"/>
+      <el-table-column label="权限调整">
+        <template #default="{row}">
+          <el-select
+              v-if="row.type!=='学生'"
+              v-model="row.newType"
+              clearable
+              style="width: 120px"
+          >
+            <el-option
+                v-for="type in ['宿舍管理员','系统管理员','分管领导','维修管理员']"
+                :key="type"
+                :label="type"
+                :value="type"
+            />
+          </el-select>
+          <el-popover ref="popoverRef" v-if="row.newType==='宿舍管理员'" placement="right" :width="300" trigger="click"
+                      @show="getUnManagedBuilding">
+            <template #reference>
+              <el-button v-if="row.type!=='学生'" style="margin-left: 10px" type="primary">确认</el-button>
+            </template>
+            <el-select
+                v-model="selectedBuilding"
+                clearable
+                placeholder="选择管理楼栋"
+                style="width: 150px"
+                @change="handleSelectBuilding(row)"
+            >
+              <el-option
+                  v-for="building in unManagedBuilding"
+                  :key="building.buildingId"
+                  :label="building.buildingId"
+                  :value="building.buildingId"
+              />
+            </el-select>
+            <el-button v-if="row.type!=='学生'" style="margin-left: 10px" type="primary" @click="setAdminType(row)">暂不分配</el-button>
+          </el-popover>
+          <el-button v-if="row.type!=='学生' && row.newType!=='宿舍管理员'" style="margin-left: 10px" type="primary"
+                     @click="setAdminType(row)">确认
+          </el-button>
+        </template>
+      </el-table-column>
     </el-table>
     <el-pagination
         v-model:current-page="query.pageNum"

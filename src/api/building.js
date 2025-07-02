@@ -11,3 +11,14 @@ export const getFloorNumService = (buildingId) => {
 export const getManagedBuildingService = () => {
     return request.get('/building/getManagedBuilding')
 }
+
+export const getUnManagedBuildingService = () => {
+    return request.get('/building/getUnManagedBuilding')
+}
+
+export const assignDormitoryService = (buildingId, dormitoryId) => {
+    const params = new URLSearchParams();
+    params.append('buildingId', buildingId);
+    params.append('dormitoryId', dormitoryId);
+    return request.post('/building/assignDormitory', params)
+}

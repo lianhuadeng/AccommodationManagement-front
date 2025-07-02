@@ -54,3 +54,11 @@ export const getUserPageListService = (query) => {
 export const getMaintenanceAdminListService = () => {
     return request.get('/maintenanceList')
 }
+
+export const setAdminTypeService = (userId, type) => {
+    const params = new URLSearchParams();
+    params.append('userId', userId);
+    params.append('adminType', type);
+    return request.post('/systemAdmin/setAdminType', params)
+}
+
