@@ -437,22 +437,7 @@ getUserList()
         </el-alert>
       </div>
     </div>
-    <el-table :data="userList" @selection-change="handleSelectionChange"
-              @filter-change="handleFilterChange"
-              border style="width: 100%;">
-      <el-table-column prop="name" label="姓名"/>
-      <el-table-column prop="userId" label="ID"/>
-      <el-table-column prop="type" :label="query.type || '类型'" :filter-multiple="false" :filters="type"
-                       column-key="type"
-                       v-model="query.type" :filter-method="filterType"
-                       :filtered-value="query.type ? [query.type] : []"/>
-      <el-table-column label="权限调整">
-        <template #default="{row}">
-          <el-select
-              v-if="row.type!=='学生'"
-              v-model="row.newType"
-              style="width: 120px"
-          >
+
             <el-option
                 v-for="type in ['宿舍管理员','系统管理员','分管领导','维修管理员']"
                 :key="type"

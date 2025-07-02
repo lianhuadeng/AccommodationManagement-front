@@ -48,7 +48,7 @@ getMyApplication()
 <template>
   <div>
     <el-table :data="application" border style="width: 100%;">
-      <el-table-column prop="applicationType" label="类型"/>
+      <el-table-column prop="applicationType" label="类型" />
       <el-table-column prop="applierName" label="申请人" />
       <el-table-column prop="targetLocation" label="目标位置" />
       <el-table-column prop="applicationTime" label="申请时间" />
