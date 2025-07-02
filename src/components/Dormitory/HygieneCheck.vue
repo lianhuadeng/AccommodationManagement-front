@@ -99,6 +99,18 @@ watch(() => newRecord.value.score, (newScore) => {
   }
 })
 getData()
+
+//TEST
+// newRecord.value ={
+//   roomId: 2020508,
+//   score: 100,
+//   reason: null
+// }
+// for(let i=0;i<100;i++){
+//   newRecord.value.score=Math.floor(Math.random() * 100)
+//   newRecord.value.reason=toString(newRecord.value.score)
+//   makeNewRecord()
+// }
 </script>
 
 <template>
