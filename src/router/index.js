@@ -21,7 +21,6 @@ import Llayout from "@/components/Leader/Llayout.vue";
 import LIndex from "@/components/Leader/LIndex.vue";
 import Audit from "@/components/Leader/Audit.vue";
 import DispCheck from "@/components/Leader/DispCheck.vue";
-import Batch from "@/components/Leader/Batch.vue";
 import Slayout from "@/components/system/Slayout.vue";
 import SIndex from "@/components/system/SIndex.vue";
 import EditUser from "@/components/system/EditUser.vue";
@@ -59,7 +58,6 @@ const routes = [
             {path: '/leader/index',component: LIndex},
             {path: '/leader/audit',component: Audit},
             {path: '/leader/check',component: DispCheck},
-            {path: '/leader/batch',component: Batch}
         ]
     },
     {

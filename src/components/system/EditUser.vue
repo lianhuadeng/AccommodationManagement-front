@@ -451,7 +451,6 @@ getUserList()
           <el-select
               v-if="row.type!=='学生'"
               v-model="row.newType"
-              clearable
               style="width: 120px"
           >
             <el-option

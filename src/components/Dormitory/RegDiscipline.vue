@@ -10,8 +10,8 @@ const newRecord = ref({
 })
 const floorNum = ref()
 
-const clearRecord = ()=>{
-  newRecord.value={
+const clearRecord = () => {
+  newRecord.value = {
     studentId: null,
     reason: null
   }
@@ -21,20 +21,25 @@ const newRecordRules = {
   studentId: [{required: true, message: '请输入学生ID', trigger: 'blur'}],
   reason: [{required: true, message: '请输入违纪行为', trigger: 'blur'}]
 }
-const makeNewRecord = () => {
-  console.log(newRecord.value)
-  addDiscipline(newRecord.value).then(res=>{
-    if(res.status){
+const makeNewRecord = async () => {
+  const valid = await ruleFormRef.value.validate()
+      .then(() => true)
+      .catch(() => false);
+  if (!valid) {
+    ElMessage.warning('请完善表单信息');
+    return;
+  }
+  addDiscipline(newRecord.value).then(res => {
+    if (res.status) {
       ElMessage({
-        message:res.message,
-        type:'success'
+        message: res.message,
+        type: 'success'
       })
       clearRecord()
-    }
-    else{
+    } else {
       ElMessage({
-        message:res.message,
-        type:'error'
+        message: res.message,
+        type: 'error'
       })
     }
   })

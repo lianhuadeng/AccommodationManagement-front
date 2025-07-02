@@ -41,7 +41,8 @@ const newRecord = ref({
 })
 
 const newRecordRules = {
-  roomId: [{required: true, message: '请选择房间', trigger: 'blur'}],
+  roomId: [{required: true, message: '请选择房间', trigger: 'blur'},
+    {min:1,message: '请选择房间',trigger: 'blur'}],
   score: [
     {required: true, message: '请输入得分', trigger: 'blur'},
     {type:"number",min:1,max:100,message:'请输入正确的分数（1-100）',trigger: 'blur'}
@@ -69,6 +70,13 @@ const getRoomList = async () => {
 }
 
 const makeNewRecord = async ()=>{
+  const valid = await ruleFormRef.value.validate()
+      .then(() => true)
+      .catch(() => false);
+  if (!valid) {
+    ElMessage.warning('请完善表单信息');
+    return;
+  }
   const result = await addHygieneCheckService(newRecord.value)
   if (result.status) {
     ElMessage.success(result.message)

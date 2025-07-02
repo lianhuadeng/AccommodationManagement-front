@@ -33,13 +33,13 @@ getMyApplication()
 <template>
 <div>
   <el-table :data="application" border style="width: 100%;">
-    <el-table-column prop="applicationType" label="申请类型" max-width="150"/>
-    <el-table-column prop="applierName" label="申请人" width="180"/>
-    <el-table-column prop="targetLocation" label="目标位置" max-width="150"/>
-    <el-table-column prop="applicationTime" label="申请时间" width="180"/>
-    <el-table-column prop="remark" label="备注" width="180"/>
-    <el-table-column prop="leaderName" label="审核人" width="180"/>
-    <el-table-column label="操作" max-width="150">
+    <el-table-column prop="applicationType" label="申请类型" />
+    <el-table-column prop="applierName" label="申请人" />
+    <el-table-column prop="targetLocation" label="目标位置" />
+    <el-table-column prop="applicationTime" label="申请时间" />
+    <el-table-column prop="remark" label="备注" />
+    <el-table-column prop="leaderName" label="审核人" />
+    <el-table-column label="操作" >
       <template #default="{ row }">
       <el-button @click="makeAplExert(row.applicationId)" type="primary">处理完成</el-button>
       </template>
