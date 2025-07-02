@@ -199,6 +199,7 @@ const makeNewUser = async () => {
   const result = await addUserService(newUser.value)
   if (result.status) {
     ElMessage.success(result.message)
+    await getUserList()
     clearData()
   } else {
     ElMessage.error(result.message)
@@ -446,10 +447,10 @@ getUserList()
                        column-key="type"
                        v-model="query.type" :filter-method="filterType"
                        :filtered-value="query.type ? [query.type] : []"/>
-      <el-table-column label="权限调整">
+      <el-table-column label="管理员分配">
         <template #default="{row}">
           <el-select
-              v-if="row.type!=='学生'"
+              v-if="row.type==='教师'"
               v-model="row.newType"
               style="width: 120px"
           >
@@ -463,7 +464,7 @@ getUserList()
           <el-popover ref="popoverRef" v-if="row.newType==='宿舍管理员'" placement="right" :width="300" trigger="click"
                       @show="getUnManagedBuilding">
             <template #reference>
-              <el-button v-if="row.type!=='学生'" style="margin-left: 10px" type="primary">确认</el-button>
+              <el-button v-if="row.type==='教师'" style="margin-left: 10px" type="primary">确认</el-button>
             </template>
             <el-select
                 v-model="selectedBuilding"
@@ -479,9 +480,9 @@ getUserList()
                   :value="building.buildingId"
               />
             </el-select>
-            <el-button v-if="row.type!=='学生'" style="margin-left: 10px" type="primary" @click="setAdminType(row)">暂不分配</el-button>
+            <el-button v-if="row.type==='教师'" style="margin-left: 10px" type="primary" @click="setAdminType(row)">暂不分配</el-button>
           </el-popover>
-          <el-button v-if="row.type!=='学生' && row.newType!=='宿舍管理员'" style="margin-left: 10px" type="primary"
+          <el-button v-if="row.type==='教师' && row.newType!=='宿舍管理员'" style="margin-left: 10px" type="primary"
                      @click="setAdminType(row)">确认
           </el-button>
         </template>
