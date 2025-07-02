@@ -1,5 +1,4 @@
 <script setup>
-//TODO - Update
 import {ref, watch} from "vue";
 import {getFloorNumService, getManagedBuildingService} from "@/api/building.js";
 import {ElMessage} from "element-plus";
