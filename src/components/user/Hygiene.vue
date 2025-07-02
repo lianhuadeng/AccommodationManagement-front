@@ -1,5 +1,4 @@
 <script setup>
-//TODO 楼栋分配宿管
 import {ref} from "vue";
 import {getHygiene, getUserInfoService} from "@/api/user.js";
 const query = ref({
