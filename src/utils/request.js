@@ -47,23 +47,4 @@ instance.interceptors.response.use(
     }
 )
 
-//添加响应拦截器
-// instance.interceptors.response.use(
-//     result => {
-//         if (result.status === 0) {
-//             return result.data;
-//         } else {
-//             ElNotification({
-//                 title: '错误',
-//                 message: '服务异常',
-//                 type: 'error',
-//             });
-//             return Promise;
-//         }
-//     },
-//     err => {
-//         alert('服务异常');
-//         return Promise.reject(err);//异步的状态转化成失败的状态
-//     }
-// )
 export default instance;

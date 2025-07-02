@@ -293,7 +293,7 @@ const handleSelectBuilding = async (row) => {
   if (result.status) {
     ElMessage.success(result.message)
     console.log(selectedBuilding.value)
-    await getUserList()
+    await setAdminType(row)
   } else {
     ElMessage.error(result.message)
   }
@@ -451,7 +451,6 @@ getUserList()
           <el-select
               v-if="row.type!=='学生'"
               v-model="row.newType"
-              clearable
               style="width: 120px"
           >
             <el-option
