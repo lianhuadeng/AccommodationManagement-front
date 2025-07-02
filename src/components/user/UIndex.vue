@@ -29,8 +29,6 @@ const stu = ref({
   location: null
 })
 
-stu.value.id = route.query.id
-
 const getInfo = async () => {
   try {
     const result = await getUserInfoService();

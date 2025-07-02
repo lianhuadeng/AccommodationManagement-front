@@ -1,5 +1,4 @@
 <script setup>
-//TODO - Implement
 import {ref} from "vue";
 import {ElMessage} from "element-plus";
 import {getStudentDisciplinary} from "@/api/disciplinary.js";
@@ -10,7 +9,7 @@ const getDisciplinaryList = async () => {
   if (result.status) {
     disList.value = result.data
   } else {
-    ElMessage.error(result.message)
+    ElMessage.error(result.data)
   }
 }
 getDisciplinaryList()

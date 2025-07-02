@@ -6,8 +6,6 @@ import {getMain, mainExert} from "@/api/staff.js";
 const maintenances = ref([
 ])
 
-
-
 const getMyMainExert = () => {
   getMain({status:'待维修'}).then(res => {
     maintenances.value = res.data

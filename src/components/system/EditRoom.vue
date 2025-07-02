@@ -106,6 +106,7 @@ getParkList()
     <el-radio-group v-model="op">
       <el-radio-button @click="clearForm" label="添加园区" value="添加园区"/>
       <el-radio-button @click="clearForm" label="添加楼栋" value="添加楼栋"/>
+      <el-radio-button @click="clearForm" label="宿管调整" value="宿管调整"/>
     </el-radio-group>
     <el-form v-if="op==='添加园区'" :rules="newParkRules" :model="newAddPark" ref="ruleFormRef"
              style="margin-top: 1vmin">
