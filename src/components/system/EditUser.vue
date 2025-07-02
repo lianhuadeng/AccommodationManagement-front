@@ -184,7 +184,8 @@ const filterType = (value, row) => {
 
 const newRules = {
   name: [{required: true, message: '请输入姓名', trigger: 'blur'}],
-  userId: [{required: true, message: '请输入ID', trigger: 'blur'}],
+  userId: [{required: true, message: '请输入ID', trigger: 'blur'},
+    {type: 'number',min:100000,message: 'ID最短为6位！',trigger: 'blur'}],
   type: [{required: true, message: '请选择类型', trigger: 'blur'}],
   college: [{required: true, message: '请输入学院', trigger: 'blur'}],
   major: [{required: true, message: '请输入专业', trigger: 'blur'}],
@@ -196,6 +197,13 @@ const newRules = {
 }
 
 const makeNewUser = async () => {
+  const valid = await ruleFormRef.value.validate()
+      .then(() => true)
+      .catch(() => false);
+  if (!valid) {
+    ElMessage.warning('请完善表单信息');
+    return;
+  }
   const result = await addUserService(newUser.value)
   if (result.status) {
     ElMessage.success(result.message)
@@ -276,9 +284,6 @@ const getUnManagedBuilding = async () => {
 }
 
 const setAdminType = async (row) => {
-  if (row.newType === '宿舍管理员') {
-
-  }
   const result = await setAdminTypeService(row.userId, row.newType)
   if (result.status) {
     ElMessage.success(result.message)
@@ -331,7 +336,7 @@ getUserList()
         </el-col>
         <el-col :span="3">
           <el-form-item label="ID" prop="userId">
-            <el-input v-model="newUser.userId"/>
+            <el-input type="number" v-model.number="newUser.userId"/>
           </el-form-item>
         </el-col>
       </el-row>
