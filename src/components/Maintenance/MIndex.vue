@@ -135,44 +135,27 @@ getMyMainExert()
 </script>
 
 <template>
-  <div>
+  <div class="page-container">
+    <div class="header-container">
+      <div class="header">
+        <div class="icon" id="Information"></div>
+        <span id="InformationText" style="">个人信息</span>
+      </div>
+      <div class="button-group">
+        <el-button @click="updateContact" type="primary">修改联系方式</el-button>
+        <el-button @click="resetPassword = true;" type="danger">修改密码</el-button>
+      </div>
+    </div>
     <el-descriptions
         class="margin-top"
-        title="个人信息"
         :column="1"
         :size="'large'"
         border
     >
-      <template #extra>
-        <el-button @click="updateContact" type="primary">保存</el-button>
-        <el-button @click="resetPassword = true;" type="danger">修改密码</el-button>
-        <el-dialog v-model="resetPassword" title="修改密码" width="500" center @close="clearForm">
-          <template #footer>
-            <div class="dialog-footer">
-              <el-form :model="changePasswordData" :rules="rules">
-                <el-form-item label="旧密码" :label-width="formLabelWidth" prop="oldPassword">
-                  <el-input :prefix-icon="Lock" type="text" v-model="changePasswordData.oldPassword" autocomplete="off"
-                            placeholder="请输入旧密码"></el-input>
-                </el-form-item>
-                <el-form-item label="新密码" :label-width="formLabelWidth">
-                  <el-input :prefix-icon="Lock" type="password" v-model="changePasswordData.newPassword" autocomplete="off"
-                            placeholder="请输入新密码"></el-input>
-                </el-form-item>
-                <el-form-item label="确认新密码" :label-width="formLabelWidth">
-                  <el-input :prefix-icon="Lock" type="password" v-model="changePasswordData.confirmPassword" autocomplete="off"
-                            placeholder="请再次输入密码"></el-input>
-                </el-form-item>
-              </el-form>
-              <el-button type="primary" @click="changePassword">确认</el-button>
-              <el-button @click="resetPassword = false">取消</el-button>
-            </div>
-          </template>
-        </el-dialog>
-      </template>
       <el-descriptions-item>
         <template #label>
           <div class="cell-item">
-            <el-icon>
+            <el-icon style="margin-right: 10px;">
               <user/>
             </el-icon>
             姓名
@@ -183,7 +166,7 @@ getMyMainExert()
       <el-descriptions-item>
         <template #label>
           <div class="cell-item">
-            <el-icon>
+            <el-icon style="margin-right: 10px;">
               <iphone/>
             </el-icon>
             联系方式
@@ -194,7 +177,7 @@ getMyMainExert()
       <el-descriptions-item>
         <template #label>
           <div class="cell-item">
-            <el-icon>
+            <el-icon style="margin-right: 10px;">
               <List/>
             </el-icon>
             ID:
@@ -203,8 +186,11 @@ getMyMainExert()
         {{ staff.id }}
       </el-descriptions-item>
     </el-descriptions>
-    维修记录：
-    <el-table :data="maintenance" border style="width: 100%;">
+    <div class="header">
+      <div class="icon" id="repair"></div>
+      <span id="repairText" style="">维修记录</span>
+    </div>
+    <el-table :data="maintenance" border style="width: 100%; height: 50vh; overflow-y: auto;">
       <el-table-column prop="repairItem" label="维修项目" max-width="150"/>
       <el-table-column prop="location" label="地点" max-width="150"/>
       <el-table-column prop="dormitoryName" label="分配人" width="180"/>
@@ -213,6 +199,9 @@ getMyMainExert()
           <el-button @click="lookLook(row.content)">查看内容</el-button>
         </template>
       </el-table-column>
+      <template #empty>
+        <el-empty description="无维修记录" />
+      </template>
     </el-table>
     <el-dialog v-model="lookContent.isLook" title="维修具体内容" width="500" center>
       <template #footer>
@@ -227,9 +216,35 @@ getMyMainExert()
       </template>
     </el-dialog>
   </div>
+  <el-dialog v-model="resetPassword" title="修改密码" width="500" center @close="clearForm">
+    <template #footer>
+      <div class="dialog-footer">
+        <el-form :model="changePasswordData" :rules="rules">
+          <el-form-item label="旧密码" :label-width="formLabelWidth" prop="oldPassword">
+            <el-input :prefix-icon="Lock" type="text" v-model="changePasswordData.oldPassword" autocomplete="off"
+                      placeholder="请输入旧密码"></el-input>
+          </el-form-item>
+          <el-form-item label="新密码" :label-width="formLabelWidth">
+            <el-input :prefix-icon="Lock" type="password" v-model="changePasswordData.newPassword" autocomplete="off"
+                      placeholder="请输入新密码"></el-input>
+          </el-form-item>
+          <el-form-item label="确认新密码" :label-width="formLabelWidth">
+            <el-input :prefix-icon="Lock" type="password" v-model="changePasswordData.confirmPassword" autocomplete="off"
+                      placeholder="请再次输入密码"></el-input>
+          </el-form-item>
+        </el-form>
+        <el-button type="primary" @click="changePassword">确认</el-button>
+        <el-button @click="resetPassword = false">取消</el-button>
+      </div>
+    </template>
+  </el-dialog>
 </template>
 
 <style scoped>
+
+.page-container {
+  padding: 1vmin;
+}
 
 .cell-item {
   display: flex;
@@ -250,5 +265,50 @@ getMyMainExert()
 
 .status-completed {
   color: #67c23a;
+}
+
+
+.header {
+  display: flex;
+  align-items: center;
+}
+
+/* 标题和按钮布局 */
+.header-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 15px;
+}
+
+.icon {
+  width: 30px;
+  height: 30px;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  margin-right: 10px;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  height: 6vh;
+}
+
+#Information {
+  background-image: url('/src/assets/image/info.png');
+}
+
+#repair {
+  background-image: url('/src/assets/image/repair.png');
+}
+
+#InformationText,
+#repairText {
+  font-weight: bold;
+  font-size: 16px;
+  margin-right: 10px;
 }
 </style>

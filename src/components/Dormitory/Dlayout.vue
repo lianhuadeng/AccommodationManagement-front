@@ -76,13 +76,10 @@ watch(
         </template>
       </div>
     </el-header>
-    <el-main>
+    <el-main class="main">
       <router-view></router-view>
+
     </el-main>
-
-    <div class="main">
-    </div>
-
   </el-container>
 </template>
 
@@ -91,7 +88,7 @@ watch(
   height: 100vh;
 
   .header {
-    height: 80px;
+    height: 10vh;
     background-color: #AB3723;
     display: flex;
     align-items: center;
@@ -100,7 +97,7 @@ watch(
     .logo {
       width: 30vh;
       height: 7.5vh;
-      background-image: url('/SCULogo.png');
+      background-image: url('/src/assets/image/SCULogo.png');
       background-size: contain;
       background-repeat: no-repeat;
       background-position: center;
@@ -120,6 +117,9 @@ watch(
       justify-content: center;
       margin-left: 20vh; // 适当控制与 logo 的间距
     }
+  }
+  .main {
+    height: 90vh;
   }
 }
 

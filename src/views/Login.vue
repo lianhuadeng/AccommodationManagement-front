@@ -98,74 +98,164 @@ const login = async () => {
 </script>
 
 <template>
-  <el-row class="login-page">
-    <el-col :span="7" class="form">
-      <!-- 登录表单 -->
-      <el-form ref="formRef" size="large" autocomplete="off" :model="loginData" @keyup.enter.native="login" :rules="rules">
-        <el-form-item>
-          <h1>登录</h1>
-        </el-form-item>
-        <el-form-item prop="userId">
-          <el-input :prefix-icon="User" placeholder="请输入学号/工号"
-                    v-model="loginData.userId"></el-input>
-        </el-form-item>
-        <el-form-item prop="password">
-          <el-input name="password" :prefix-icon="Lock" type="password" placeholder="请输入密码"
-                    v-model="loginData.password" show-password></el-input>
-        </el-form-item>
-        <!-- 登录按钮 -->
-        <el-form-item>
-          <el-button class="button" type="primary" auto-insert-space @click="login">登录</el-button>
-        </el-form-item>
-      </el-form>
-    </el-col>
-  </el-row>
+  <div class="background-container">
+    <div class="login-container">
+      <el-row class="login-page">
+        <el-col :span="7" class="form">
+          <!-- 登录表单 -->
+          <el-form ref="formRef" size="large" autocomplete="off" :model="loginData" @keyup.enter.native="login"
+                   :rules="rules">
+            <el-form-item>
+              <h1>登录</h1>
+            </el-form-item>
+            <el-form-item prop="userId">
+              <el-input :prefix-icon="User" placeholder="请输入学号/工号"
+                        v-model="loginData.userId"></el-input>
+            </el-form-item>
+            <el-form-item prop="password">
+              <el-input name="password" :prefix-icon="Lock" type="password" placeholder="请输入密码"
+                        v-model="loginData.password" show-password></el-input>
+            </el-form-item>
+            <!-- 登录按钮 -->
+            <el-form-item>
+              <el-button class="button" type="primary" auto-insert-space @click="login">登录</el-button>
+            </el-form-item>
+          </el-form>
+        </el-col>
+      </el-row>
+    </div>
+  </div>
 </template>
 
 <style lang="scss" scoped>
-/* 样式 */
-.login-page {
+.background-container {
   height: 100vh;
-  /* 高度占满屏幕 */
-  background-color: #f5f5f5;
-  /* 灰色背景 */
+  width: 100%;
   display: flex;
-  /* 使用 flex 布局 */
   justify-content: center;
-  /* 水平居中 */
   align-items: center;
-  /* 垂直居中 */
+
+  /* 背景图片设置 */
+  background-image: url('/src/assets/image/login-bg.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+
+  position: relative;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(to right, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.3));
+    z-index: 0;
+  }
+}
+
+.login-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: flex-end; /* 使内容靠右 */
+  align-items: center;
+  padding-right: 10%; /* 右侧留出空间 */
+  z-index: 1;
+}
+
+.login-page {
+  width: 420px;
+  z-index: 2;
+  animation: fadeInRight 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 
   .form {
-    width: 100%;
-    min-width: 450px;
-    /* 表单最大宽度 */
-    background-color: #ffffff;
-    /* 表单背景色 */
-    padding: 20px;
-    /* 内边距 */
-    border-radius: 8px;
-    /* 圆角 */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    /* 阴影效果 */
+    min-width: 400px;
+    background-color: rgba(255, 255, 255, 0.95);
+    padding: 40px 35px;
+    border-radius: 12px;
+    box-shadow: 0 10px 35px rgba(0, 0, 0, 0.25);
     user-select: none;
-
-    .button {
-      width: 100%;
-    }
-
-    .flex {
-      width: 100%;
-      display: flex;
-      justify-content: space-between;
-    }
 
     h1 {
       text-align: center;
-      /* 标题居中 */
-      margin-bottom: 20px;
-      /* 间距 */
+      margin-bottom: 30px;
+      font-size: 24px;
+      color: #2c3e50;
+      font-weight: 600;
+      letter-spacing: 1px;
     }
+
+    .button {
+      width: 100%;
+      height: 42px;
+      font-size: 16px;
+      border: none;
+      transition: all 0.3s ease;
+      letter-spacing: 2px;
+
+      &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(52, 152, 219, 0.4);
+      }
+    }
+  }
+}
+
+/* 响应式设计 */
+@media (max-width: 992px) {
+  .login-container {
+    justify-content: center;
+    padding-right: 0;
+  }
+
+  .login-page {
+    width: 90%;
+    max-width: 500px;
+
+    .form {
+      min-width: auto;
+      width: 100%;
+    }
+  }
+}
+
+@media (max-height: 700px) {
+  .login-page {
+    transform: scale(0.9);
+    transform-origin: center;
+  }
+}
+
+/* 动画效果 */
+@keyframes fadeInRight {
+  from {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* 标题装饰效果 */
+h1 {
+  position: relative;
+  padding-bottom: 15px;
+
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 3px;
+    background: linear-gradient(to right, #3498db, #2c3e50);
+    border-radius: 3px;
   }
 }
 </style>

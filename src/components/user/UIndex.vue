@@ -19,7 +19,6 @@ import {myRepairService} from "@/api/repair.js";
 import {useTokenStore} from "@/stores/token.js";
 
 const router = useRouter()
-const route = useRoute()
 const application = ref([])
 const maintenance = ref([])
 const stu = ref({
@@ -89,15 +88,14 @@ const rules = {
   ]
 }
 const changePassword = async () => {
-
-    const result = await changePasswordService(changePasswordData.value);
-    if (result.status) {
-      ElMessage({
-        message: result.message,
-        type: 'success'
-      })
-      await router.push('/login');
-    } else {
+  const result = await changePasswordService(changePasswordData.value);
+  if (result.status) {
+    ElMessage({
+      message: result.message,
+      type: 'success'
+    })
+    await router.push('/login');
+  } else {
     ElMessage({
       message: result.message,
       type: 'error',
@@ -158,11 +156,11 @@ const undoApl = async (applicationId) => {
 const getMyMaintenance = async () => {
   const result = await myRepairService();
 
-  if (result.status){
+  if (result.status) {
     maintenance.value = result.data
     console.log(maintenance.value)
 
-  }else{
+  } else {
     ElMessage.error(result.message)
   }
 }
@@ -171,44 +169,26 @@ getMyMaintenance()
 </script>
 
 <template>
-  <div>
+  <div class="page-container">
+    <div class="header-container">
+      <div class="header">
+        <div class="icon" id="Information"></div>
+        <span id="InformationText" style="">个人信息</span>
+      </div>
+      <div class="button-group">
+        <el-button @click="updateContact" type="primary">修改联系方式</el-button>
+        <el-button @click="resetPassword = true;" type="danger">修改密码</el-button>
+      </div>
+    </div>
     <el-descriptions
-        class="margin-top"
-        title="个人信息"
         :column="1"
         :size="'large'"
         border
     >
-      <template #extra>
-        <el-button @click="updateContact" type="primary">保存</el-button>
-        <el-button @click="resetPassword = true;" type="danger">修改密码</el-button>
-        <el-dialog v-model="resetPassword" title="修改密码" width="500" center @close="clearForm">
-          <template #footer>
-            <div class="dialog-footer">
-              <el-form :model="changePasswordData" :rules="rules">
-                <el-form-item label="旧密码" :label-width="formLabelWidth" prop="oldPassword">
-                  <el-input :prefix-icon="Lock" type="text" v-model="changePasswordData.oldPassword" autocomplete="off"
-                            placeholder="请输入旧密码"></el-input>
-                </el-form-item>
-                <el-form-item label="新密码" :label-width="formLabelWidth" prop="newPassword">
-                  <el-input :prefix-icon="Lock" type="password" v-model="changePasswordData.newPassword"
-                            autocomplete="off" placeholder="请输入新密码"></el-input>
-                </el-form-item>
-                <el-form-item label="确认新密码" :label-width="formLabelWidth" prop="confirmPassword">
-                  <el-input :prefix-icon="Lock" type="password" v-model="changePasswordData.confirmPassword"
-                            autocomplete="off" placeholder="请再次输入密码"></el-input>
-                </el-form-item>
-              </el-form>
-              <el-button type="primary" @click="changePassword">确认</el-button>
-              <el-button @click="resetPassword = false;">取消</el-button>
-            </div>
-          </template>
-        </el-dialog>
-      </template>
       <el-descriptions-item>
         <template #label>
           <div class="cell-item">
-            <el-icon>
+            <el-icon style="margin-right: 10px;">
               <user/>
             </el-icon>
             姓名
@@ -219,7 +199,7 @@ getMyMaintenance()
       <el-descriptions-item>
         <template #label>
           <div class="cell-item">
-            <el-icon>
+            <el-icon style="margin-right: 10px;">
               <iphone/>
             </el-icon>
             联系方式
@@ -230,7 +210,7 @@ getMyMaintenance()
       <el-descriptions-item>
         <template #label>
           <div class="cell-item">
-            <el-icon>
+            <el-icon style="margin-right: 10px;">
               <List/>
             </el-icon>
             学号
@@ -241,7 +221,7 @@ getMyMaintenance()
       <el-descriptions-item>
         <template #label>
           <div class="cell-item">
-            <el-icon>
+            <el-icon style="margin-right: 10px;">
               <Location/>
             </el-icon>
             宿舍位置
@@ -250,9 +230,11 @@ getMyMaintenance()
         {{ stu.location }}
       </el-descriptions-item>
     </el-descriptions>
-    <br>
-    我的宿舍调整申请：
-    <el-table :data="application" border style="width: 100%;">
+    <div class="header">
+      <div class="icon" id="application"></div>
+      <span id="ApplicationText" style="">宿舍调整申请</span>
+    </div>
+    <el-table :data="application" border style="width: 100%; height: 20vh; overflow-y: auto;">
       <el-table-column prop="applicationType" label="申请类型"/>
       <el-table-column prop="targetLocation" label="申请目标地址"/>
       <el-table-column prop="applicationTime" label="申请时间"/>
@@ -267,11 +249,16 @@ getMyMaintenance()
           </el-button>
         </template>
       </el-table-column>
+      <template #empty>
+        <el-empty description="无宿舍调整申请"/>
+      </template>
     </el-table>
-    <br>
-    <div style="border:dotted #AB3723 0.5vmin">
-      维修申请：
-    <el-table :data="maintenance" border style="width: 100%;">
+
+    <div class="header">
+      <div class="icon" id="repair"></div>
+      <span id="repairText" style="">维修申请</span>
+    </div>
+    <el-table :data="maintenance" border style="width: 100%; height: 20vh; overflow-y: auto;">
       <el-table-column prop="repairItem" label="维修项目"/>
       <el-table-column prop="pictureUrl" label="图片详情">
         <template #default="{ row }">
@@ -282,17 +269,40 @@ getMyMaintenance()
       <el-table-column prop="location" label="位置"/>
       <el-table-column prop="content" label="维修详情"/>
       <el-table-column prop="maintainerName" label="维修人员">
-<!--        TODO: 展示维修人联系方式-->
+        <!--        TODO: 展示维修人联系方式-->
       </el-table-column>
       <el-table-column prop="status" label="处理进度" width="180">
         <template #default="{ row }">
           <span :class="getStatusMai(row.status)">{{ row.status }}</span>
         </template>
       </el-table-column>
+      <template #empty>
+        <el-empty description="无维修申请"/>
+      </template>
     </el-table>
-    </div>
   </div>
-
+  <el-dialog v-model="resetPassword" title="修改密码" width="500" center @close="clearForm">
+    <template #footer>
+      <div class="dialog-footer">
+        <el-form :model="changePasswordData" :rules="rules">
+          <el-form-item label="旧密码" :label-width="formLabelWidth" prop="oldPassword">
+            <el-input :prefix-icon="Lock" type="text" v-model="changePasswordData.oldPassword" autocomplete="off"
+                      placeholder="请输入旧密码"></el-input>
+          </el-form-item>
+          <el-form-item label="新密码" :label-width="formLabelWidth" prop="newPassword">
+            <el-input :prefix-icon="Lock" type="password" v-model="changePasswordData.newPassword"
+                      autocomplete="off" placeholder="请输入新密码"></el-input>
+          </el-form-item>
+          <el-form-item label="确认新密码" :label-width="formLabelWidth" prop="confirmPassword">
+            <el-input :prefix-icon="Lock" type="password" v-model="changePasswordData.confirmPassword"
+                      autocomplete="off" placeholder="请再次输入密码"></el-input>
+          </el-form-item>
+        </el-form>
+        <el-button type="primary" @click="changePassword">确认</el-button>
+        <el-button @click="resetPassword = false;">取消</el-button>
+      </div>
+    </template>
+  </el-dialog>
 </template>
 
 <style scoped>
@@ -302,10 +312,7 @@ getMyMaintenance()
   align-items: center;
 }
 
-.margin-top {
-  margin-top: 20px;
-  border:solid #AB3723 0.5vmin;
-  border-radius:1%;
+.page-container {
   padding: 1vmin;
 }
 
@@ -323,5 +330,54 @@ getMyMaintenance()
 
 .status-completed {
   color: #67c23a;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+}
+
+/* 标题和按钮布局 */
+.header-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 15px;
+}
+
+.icon {
+  width: 30px;
+  height: 30px;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  margin-right: 10px;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  height: 6vh;
+}
+
+#Information {
+  background-image: url('/src/assets/image/info.png');
+}
+
+#application {
+  background-image: url('/src/assets/image/application.png');
+}
+
+#repair {
+  background-image: url('/src/assets/image/repair.png');
+}
+
+#InformationText,
+#repairText,
+#ApplicationText {
+  font-weight: bold;
+  font-size: 16px;
+  margin-right: 10px;
 }
 </style>

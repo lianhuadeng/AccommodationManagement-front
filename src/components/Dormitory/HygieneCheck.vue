@@ -4,7 +4,9 @@ import {getFloorNumService, getManagedBuildingService} from "@/api/building.js";
 import {ElMessage} from "element-plus";
 import {getRoomListService} from "@/api/room.js";
 import {addHygieneCheckService} from "@/api/hygieneCheck.js";
+import {useRouter} from "vue-router";
 
+const router = useRouter()
 const building = ref({})
 const getMyBuilding = async () => {
   const result = await getManagedBuildingService()
@@ -14,6 +16,7 @@ const getMyBuilding = async () => {
     query.value.parkId = building.value.parkId
   }else{
     ElMessage.error(result.message)
+    router.push('/dormitory/index')
   }
 }
 
@@ -108,17 +111,6 @@ watch(() => newRecord.value.score, (newScore) => {
 })
 getData()
 
-//TEST
-// newRecord.value ={
-//   roomId: 2020508,
-//   score: 100,
-//   reason: null
-// }
-// for(let i=0;i<100;i++){
-//   newRecord.value.score=Math.floor(Math.random() * 100)
-//   newRecord.value.reason=toString(newRecord.value.score)
-//   makeNewRecord()
-// }
 </script>
 
 <template>
