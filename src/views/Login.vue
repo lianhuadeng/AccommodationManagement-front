@@ -27,11 +27,16 @@ const clearFormData = () => {
 
 const rules = reactive({
   userId: [
+    {required: true, message: '学号/工号不能为空', trigger: 'blur'},
     {
-      pattern: /^\d{6,}$/,
+      pattern: /^\d{6,}$/,   // 正则表达式：至少6位数字
+      message: '请输入正确的学号/工号',
       trigger: 'blur'
     }
   ],
+  password: [
+    {required: true, message: '密码不能为空', trigger: 'blur'},
+  ]
 });
 
 const tokenStore = useTokenStore();
@@ -104,7 +109,7 @@ const login = async () => {
           <el-input :prefix-icon="User" placeholder="请输入学号/工号"
                     v-model="loginData.userId"></el-input>
         </el-form-item>
-        <el-form-item>
+        <el-form-item prop="password">
           <el-input name="password" :prefix-icon="Lock" type="password" placeholder="请输入密码"
                     v-model="loginData.password" show-password></el-input>
         </el-form-item>
