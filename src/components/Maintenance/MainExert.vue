@@ -34,7 +34,7 @@ getMyMainExert()
 
 <template>
   <div>
-    <el-table v-model="maintenances" :data="maintenances" border style="width: 100%;">
+    <el-table v-model="maintenances" :data="maintenances" border style="width: 100%; height: 85vh; overflow-y: auto;">
       <el-table-column prop="pictureUrl" label="图片详情">
         <template #default="{ row }">
           <el-image :src="row.pictureUrl" style="width: 60px; height: 60px;" fit="cover"></el-image>
@@ -55,6 +55,9 @@ getMyMainExert()
           </el-form>
         </template>
       </el-table-column>
+      <template #empty>
+        <el-empty description="无维修申请" />
+      </template>
     </el-table>
     <el-dialog v-model="lookContent.isLook" title="维修具体内容" width="500" center>
       <template #footer>

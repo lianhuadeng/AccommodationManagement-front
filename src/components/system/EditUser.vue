@@ -311,7 +311,7 @@ getUserList()
       <el-radio-button @click="newUser={type:'学生'}" label="批量导入" value="批量导入"/>
     </el-radio-group>
     <el-form v-if="op==='添加用户'" :rules="newRules" :model="newUser" ref="ruleFormRef"
-             style="border:solid #AB3723 0.5vmin;margin-top: 1vmin">
+             style="margin-top: 1vmin">
       <el-row :gutter="20">
         <el-col :span="3">
           <el-form-item label="类型" prop="type">
@@ -386,12 +386,6 @@ getUserList()
     </el-form>
     <br>
     <div v-if="op==='批量导入'">
-      <div style="display: flex; gap: 20px; margin-bottom: 20px">
-        <el-select v-model="userType" placeholder="请选择用户类型" clearable style="flex: 1">
-          <el-option label="学生" value="学生"/>
-          <el-option label="教师" value="教师"/>
-        </el-select>
-      </div>
       <el-upload
           class="upload-demo"
           drag
@@ -416,7 +410,11 @@ getUserList()
           </div>
         </template>
       </el-upload>
-      <div style="margin-top: 20px; display: flex; justify-content: center">
+      <div style="margin-top: 10px; display: flex; justify-content: center;">
+          <el-select v-model="userType" placeholder="请选择用户类型" clearable style="width: 150px; margin-right: 10px">
+            <el-option label="学生" value="学生"/>
+            <el-option label="教师" value="教师"/>
+          </el-select>
         <el-button
             type="primary"
             :loading="uploading"
@@ -440,7 +438,8 @@ getUserList()
     </div>
     <el-table :data="userList" @selection-change="handleSelectionChange"
               @filter-change="handleFilterChange"
-              border style="width: 100%;">
+              border style="width: 100%;margin-top: 10px;height: 450px"
+              :row-style="{height: '40px'}">
       <el-table-column prop="name" label="姓名"/>
       <el-table-column prop="userId" label="ID"/>
       <el-table-column prop="type" :label="query.type || '类型'" :filter-multiple="false" :filters="type"
@@ -493,17 +492,18 @@ getUserList()
         v-model:page-size="query.pageSize"
         :page-sizes="[20,50,100,400]"
         :background="true"
-        layout="total, sizes, prev, pager, next, jumper"
+        layout="total,  prev, pager, next, jumper"
         :total="total"
         @size-change="pageSizeChange"
         @current-change="pageNoChange"
+        style="margin-top: 5px;"
     />
   </div>
 </template>
 
 <style scoped lang="scss">
 .upload-demo {
-  margin-top: 20px;
+  margin-top: 10px;
 }
 
 .el-upload__tip {

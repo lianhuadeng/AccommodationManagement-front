@@ -47,7 +47,7 @@ getMyApplication()
 
 <template>
   <div>
-    <el-table :data="application" border style="width: 100%;">
+    <el-table :data="application" border style="width: 100%; height: 85vh; overflow-y: auto;">
       <el-table-column prop="applicationType" label="类型" />
       <el-table-column prop="applierName" label="申请人" />
       <el-table-column prop="targetLocation" label="目标位置" />
@@ -60,6 +60,9 @@ getMyApplication()
           <el-button @click="reject(row.applicationId)" type="danger">不通过</el-button>
         </template>
       </el-table-column>
+      <template #empty>
+        <el-empty description="无宿舍调整申请" />
+      </template>
     </el-table>
     <el-dialog v-model="dialogVisible" title="审核意见" width="500" center :show-close=false :close-on-press-escape=false
                :close-on-click-modal=false @close="cancel">

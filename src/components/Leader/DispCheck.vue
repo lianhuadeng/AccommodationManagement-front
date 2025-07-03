@@ -26,7 +26,7 @@ getDisciplinaryList()
 </script>
 
 <template>
-  <el-table :data="disList" border style="width: 100%;">
+  <el-table :data="disList" border style="width: 100%; height: 85vh; overflow-y: auto;">
     <el-table-column prop="dormitoryName" label="所属宿管"/>
     <el-table-column prop="studentName" label="违纪人"/>
     <el-table-column prop="reason" label="违纪缘由"/>
@@ -44,6 +44,9 @@ getDisciplinaryList()
         </el-button>
       </template>
     </el-table-column>
+    <template #empty>
+      <el-empty description="无宿舍调整申请" />
+    </template>
   </el-table>
 
 </template>
