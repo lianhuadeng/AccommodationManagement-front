@@ -1,6 +1,6 @@
 <script setup>
 import {User, Lock} from '@element-plus/icons-vue'
-import {ref} from 'vue'
+import {reactive, ref} from 'vue'
 import {ElMessage} from 'element-plus';
 import {useTokenStore} from '@/stores/token.js';
 // 导入路由
@@ -15,6 +15,8 @@ const loginData = ref({
   password: null
 })
 
+const formRef = ref();
+
 // 清空表单数据
 const clearFormData = () => {
   loginData.value = {
@@ -23,54 +25,69 @@ const clearFormData = () => {
   };
 };
 
+const rules = reactive({
+  userId: [
+    {
+      pattern: /^\d{6,}$/,
+      trigger: 'blur'
+    }
+  ],
+});
+
 const tokenStore = useTokenStore();
 
 // 调用后台接口登录
 const login = async () => {
   try {
-    const result = await userLoginService(loginData.value);
-    if (result.status) {
-      ElMessage({
-        message: '登录成功',
-        type: 'success',
-      });
-      // 保存 token到pinia中
-      tokenStore.setToken(result.data);
-      //页面跳转
-      switch (result.message) {
-        case '学生':
-          router.push({path: '/user', query: {id: loginData.value.userId}});
-          break;
-        case '教师':
-          router.push({path: '/user', query: {id: loginData.value.userId}});
-          break;
-        case '系统管理员':
-          router.push({path: '/system', query: {id: loginData.value.userId}});
-          break;
-        case '分管领导':
-          router.push({path: '/leader', query: {id: loginData.value.userId}});
-          break;
-        case '维修管理员' :
-          router.push({path: '/maintenance', query: {id: loginData.value.userId}});
-          break;
-        case '宿舍管理员':
-          router.push({path: '/dormitory', query: {id: loginData.value.userId}});
-          break;
-        default:
-          break;
+    await formRef.value.validate();
+
+    try {
+      const result = await userLoginService(loginData.value);
+      if (result.status) {
+        ElMessage({
+          message: '登录成功',
+          type: 'success',
+        });
+        // 保存 token到pinia中
+        tokenStore.setToken(result.data);
+        //页面跳转
+        switch (result.message) {
+          case '学生':
+            router.push({path: '/user', query: {id: loginData.value.userId}});
+            break;
+          case '教师':
+            router.push({path: '/user', query: {id: loginData.value.userId}});
+            break;
+          case '系统管理员':
+            router.push({path: '/system', query: {id: loginData.value.userId}});
+            break;
+          case '分管领导':
+            router.push({path: '/leader', query: {id: loginData.value.userId}});
+            break;
+          case '维修管理员' :
+            router.push({path: '/maintenance', query: {id: loginData.value.userId}});
+            break;
+          case '宿舍管理员':
+            router.push({path: '/dormitory', query: {id: loginData.value.userId}});
+            break;
+          default:
+            break;
+        }
+      } else {
+        ElMessage({
+          message: result.message || '登录失败，请检查输入信息！',
+          type: 'error',
+        });
+        clearFormData()
       }
-    } else {
+    } catch (error) {
       ElMessage({
-        message: result.message || '登录失败，请检查输入信息！',
+        message: '登录过程中发生错误，请稍后再试！',
         type: 'error',
       });
-      clearFormData()
     }
-  } catch (error) {
-    ElMessage({
-      message: '登录过程中发生错误，请稍后再试！',
-      type: 'error',
-    });
+  } catch (validateError) {
+    ElMessage.warning('请正确填写登录信息');
   }
 };
 </script>
@@ -79,17 +96,17 @@ const login = async () => {
   <el-row class="login-page">
     <el-col :span="7" class="form">
       <!-- 登录表单 -->
-      <el-form ref="form" size="large" autocomplete="off" :model="loginData" @keyup.enter.native="login()">
+      <el-form ref="formRef" size="large" autocomplete="off" :model="loginData" @keyup.enter.native="login" :rules="rules">
         <el-form-item>
           <h1>登录</h1>
         </el-form-item>
-        <el-form-item>
+        <el-form-item prop="userId">
           <el-input :prefix-icon="User" placeholder="请输入学号/工号"
                     v-model="loginData.userId"></el-input>
         </el-form-item>
         <el-form-item>
           <el-input name="password" :prefix-icon="Lock" type="password" placeholder="请输入密码"
-                    v-model="loginData.password"></el-input>
+                    v-model="loginData.password" show-password></el-input>
         </el-form-item>
         <!-- 登录按钮 -->
         <el-form-item>
