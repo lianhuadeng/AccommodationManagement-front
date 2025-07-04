@@ -4,7 +4,7 @@ import {
   User,
   List, Lock
 } from '@element-plus/icons-vue'
-import {computed, onMounted, ref} from "vue";
+import { onMounted, ref} from "vue";
 import {ElMessage} from "element-plus";
 import {useRouter} from "vue-router";
 import * as echarts from 'echarts'
@@ -15,7 +15,8 @@ import {
 } from "@/api/user.js";
 
 const router = useRouter()
-
+// 图表实例
+const numChart = ref(null);
 const sys = ref({
   name: null,
   id: null,
@@ -77,7 +78,6 @@ const getInfo = async () => {
   }
 }
 
-getInfo();
 // ----------修改密码--------------
 const resetPassword = ref(false)
 const changePasswordData = ref({
@@ -157,24 +157,12 @@ const clearForm = () => {
   changePasswordData.value.confirmPassword = null
 }
 
-
-const totalUsers = computed(() => {
-  return Object.values(kindNum.value).reduce((sum, num) => sum + num, 0);
-});
-
-// 图表实例
-const numChart = ref(null);
-const studentChartRef = ref(null);
-const teacherChartRef = ref(null);
-
-
 // 初始化图表
 const initChart = () => {
-  // if (!numChart.value) return;
+  if (!numChart.value) return;
 
   const chartInstance = echarts.init(numChart.value);
-  const stuInstance = echarts.init(studentChartRef.value);
-  const teaInstance = echarts.init(teacherChartRef.value);
+
 
   // 颜色数组
   const colors = [
@@ -256,60 +244,18 @@ const initChart = () => {
   };
 
   chartInstance.setOption(option);
-  stuInstance.setOption({
-    title: {
-      text: '学生性别比例',
-      left: 'center'
-    },
-    tooltip: {
-      trigger: 'item'
-    },
-    series: [
-      {
-        name: '学生性别',
-        type: 'pie',
-        radius: '50%',
-        data: [
-          {value: sexRate.value['学生男'], name: '男'},
-          {value: sexRate.value['学生女'], name: '女'}
-        ],
-        color: ['#36CBCB', '#FF7E79']
-      }
-    ]
-  })
-  teaInstance.setOption({
-    title: {
-      text: '教师性别比例',
-      left: 'center'
-    },
-    tooltip: {
-      trigger: 'item'
-    },
-    series: [
-      {
-        name: '教师性别',
-        type: 'pie',
-        radius: '50%',
-        data: [
-          {value: sexRate.value['教师男'], name: '男'},
-          {value: sexRate.value['教师女'], name: '女'}
-        ],
-        color: ['#36CBCB', '#FF7E79']
-      }
-    ]
-  })
 
   // 响应式调整
   window.addEventListener('resize', () => {
     chartInstance.resize();
-    stuInstance.resize();
-    teaInstance.resize();
   });
 };
 
 onMounted(() => {
   initChart();
 });
+getInfo();
+
 </script>
 
 <template>
@@ -372,14 +318,6 @@ onMounted(() => {
       <div class="chart-container">
         <div ref="numChart" style="width: 100%; height: 500px;"></div>
 <!--        TODO: 删除学生性别比例和教师性别比例-->
-        <el-row :gutter="20">
-          <el-col :span="12">
-            <div ref="studentChartRef" class="chart-container" style="width: 100%; height: 300px;"></div>
-          </el-col>
-          <el-col :span="12">
-            <div ref="teacherChartRef" class="chart-container" style="width: 100%; height: 300px;"></div>
-          </el-col>
-        </el-row>
       </div>
     </div>
   </div>

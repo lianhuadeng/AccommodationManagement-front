@@ -321,8 +321,6 @@ getCurrentUserLocation()
           </el-icon>
         </el-upload>
       </el-form-item>
-
-
     </el-form>
 
   </div>
