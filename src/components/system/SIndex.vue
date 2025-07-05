@@ -316,7 +316,7 @@ getInfo();
         <span id="statisticsText" style="">用户统计</span>
       </div>
       <div class="chart-container">
-        <div ref="numChart" style="width: 100%; height: 500px;"></div>
+        <div ref="numChart" style="width: 100%; height: 53vh;"></div>
 <!--        TODO: 删除学生性别比例和教师性别比例-->
       </div>
     </div>

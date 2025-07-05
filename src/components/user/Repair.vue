@@ -243,6 +243,10 @@ const getCurrentUserLocation = async () => {
     ElMessage.error(result.message)
     await router.push('/login')
   }
+  if (result.data === null){
+    ElMessage.error('您目前没有在宿舍住宿，无法提交维修申请')
+    await router.push('/user/index')
+  }
 }
 
 const newRepairModel = ref({
